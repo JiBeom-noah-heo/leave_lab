@@ -1,0 +1,25 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+export async function getStaticPaths() {
+  const posts = await getCollection('log', p => p.data.lang === 'ko' && !p.data.draft);
+  return posts.map(p => ({ params: { slug: p.id.replace(/^ko\//, '') }, props: { p } }));
+}
+const { p } = Astro.props;
+const { Content } = await render(p);
+const ads = import.meta.env.PUBLIC_ADSENSE_CLIENT;
+---
+<Base title={p.data.title} description={p.data.description}>
+  <article class="post">
+    <h1>{p.data.title}</h1>
+    <p class="meta">
+      <span>{p.data.date.toISOString().slice(0, 10)}</span><span>{p.data.series}</span>
+      {p.data.verdict && <span class={`verdict ${p.data.verdict === 'NO-GO' ? 'no' : ''}`}>{p.data.verdict}</span>}
+    </p>
+    <Content />
+    {ads && <div class="ad"><ins class="adsbygoogle" style="display:block" data-ad-client={ads} data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script></div>}
+    {p.data.sources.length > 0 && (
+      <div class="sources"><strong>출처</strong><ul>{p.data.sources.map(s => <li><a href={s.url} rel="nofollow noopener" target="_blank">{s.title}</a></li>)}</ul></div>
+    )}
+  </article>
+</Base>

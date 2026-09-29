@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>육아휴직 중 부업 소득 판정기</title>
+<meta name="description" content="육아휴직 중 사업소득·프리랜서·아르바이트가 급여 지급 제한에 걸리는지 근로시간과 월 소득으로 판정합니다. 고용노동부 기준, 기준일 표시.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#f6f5f1;--surface:#fff;--ink:#1d1f22;--muted:#6b6f76;--line:#dcdad3;--accent:#1f5f8b;--accent-soft:#e3edf5;--ok:#2f7d4f;--ok-bg:#e2f1e7;--bad:#a35a1a;--bad-bg:#f8e9dc;--warn-bg:#fff4d6;--warn:#7a5a00}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#16181b;--surface:#1f2225;--ink:#e8e7e2;--muted:#9a9ea6;--line:#33373c;--accent:#7fb3d9;--accent-soft:#233543;--ok:#8fd3a8;--ok-bg:#1f3a2a;--bad:#e7b487;--bad-bg:#3d2c1c;--warn-bg:#3d3418;--warn:#f0d48a}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans KR",system-ui,sans-serif;font-size:15px;line-height:1.6;padding:24px 16px 56px}
+.wrap{max-width:640px;margin:0 auto}h1{font-size:22px;margin:0 0 4px}.sub{color:var(--muted);margin:0 0 16px;font-size:14px}
+.banner{background:var(--warn-bg);color:var(--warn);border-radius:8px;padding:10px 14px;font-size:13.5px;margin-bottom:16px}
+form{display:grid;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+label{display:grid;gap:4px;font-size:13.5px;color:var(--muted)}
+input,select{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:480px){.row{grid-template-columns:1fr}}
+.out{margin-top:16px;border-radius:10px;padding:16px;background:var(--accent-soft)}
+.out.ok{background:var(--ok-bg);color:var(--ok)}.out.bad{background:var(--bad-bg);color:var(--bad)}
+.out h2{margin:0 0 6px;font-size:18px}.out ul{margin:8px 0 0;padding-left:18px;font-size:14px}
+.foot{margin-top:24px;font-size:13px;color:var(--muted)}.foot a{color:var(--accent)}
+</style>
+</head>
+<body><div class="wrap">
+<h1>육아휴직 중 부업 소득 판정기</h1>
+<p class="sub">사업자등록·프리랜서·단기 근로가 육아휴직 급여 지급 제한에 걸리는지 확인합니다.</p>
+<div class="banner">이 도구의 기준(주 15시간, 월 150만 원)은 고용노동부 안내를 옮긴 것이며 판정은 참고용입니다. 최종 확인은 고용센터 상담(국번 없이 1350)으로 하세요.</div>
+<form id="f">
+  <div class="row">
+    <label>부업 형태<select id="kind"><option value="biz">사업소득 (사업자등록)</option><option value="free">프리랜서 (3.3%)</option><option value="work">근로 (아르바이트·계약)</option></select></label>
+    <label>주당 활동 시간<input id="hours" type="number" value="10" min="0"></label>
+  </div>
+  <div class="row">
+    <label>월 소득 (원, 매출이 아닌 소득)<input id="income" type="number" value="800000" min="0" step="10000"></label>
+    <label>육아휴직 급여 신청 시 신고 여부<select id="declared"><option value="yes">신고함</option><option value="no">신고 안 함</option></select></label>
+  </div>
+</form>
+<div class="out" id="out"></div>
+<p class="foot">기준일 2026-09-28. 근거: <a href="https://www.ei.go.kr" target="_blank" rel="nofollow noopener">고용보험 홈페이지</a> · <a href="https://www.moel.go.kr" target="_blank" rel="nofollow noopener">고용노동부</a>. 이 페이지는 매년 1월 기준을 재검토합니다.</p>
+</div>
+<script>
+const H=15,I=1500000;
+const $=id=>document.getElementById(id);
+function calc(){
+  const h=+$('hours').value,i=+$('income').value,d=$('declared').value,k=$('kind').value;
+  const overH=h>=H,overI=i>=I;
+  const out=$('out');let cls='',title='',items=[];
+  if(overH||overI){cls='bad';title='해당 기간 급여 지급 제한 가능성 높음';
+    if(overH)items.push(`주 ${h}시간은 기준(주 ${H}시간 이상)에 해당합니다.`);
+    if(overI)items.push(`월 ${i.toLocaleString()}원은 기준(월 ${I.toLocaleString()}원 이상)에 해당합니다.`);
+    items.push('해당 월은 급여가 지급되지 않을 수 있고, 미신고 시 부정수급으로 반환·추가징수 대상이 됩니다.');
+  }else{cls='ok';title='기준 이내 — 신고 후 수급 가능 범위';
+    items.push(`주 ${h}시간, 월 ${i.toLocaleString()}원은 두 기준 모두 아래입니다.`);
+    if(k==='biz')items.push('사업자등록 자체는 제한 사유가 아니지만, 급여 신청서에 사업 사실을 기재해야 합니다.');
+  }
+  if(d==='no')items.push('신고하지 않았다면 다음 급여 신청 때 반드시 기재하세요. 사후 적발 시 불이익이 큽니다.');
+  items.push('소득은 매출이 아니라 필요경비를 뺀 소득 기준으로 보는지 고용센터에 확인하세요.');
+  out.className='out '+cls;out.innerHTML=`<h2>${title}</h2><ul>${items.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+}
+document.querySelectorAll('input,select').forEach(e=>e.addEventListener('input',calc));calc();
+</script>
+</body></html>

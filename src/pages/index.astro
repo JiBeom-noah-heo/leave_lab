@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+const posts = (await getCollection('log', p => p.data.lang === 'ko' && !p.data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const slug = (id: string) => id.replace(/^ko\//, '');
+---
+<Base title="육아휴직 개발자 수익화 실험" description="육아휴직 1년 동안 Claude Code로 프로젝트를 만들고 실제 수익을 기록합니다. 검증 일지, 주간 실험 로그, 셀러용 계산기.">
+  <h1>결과와 판정만 기록합니다</h1>
+  <p class="meta">검증 일지 · 주간 실험 로그 · <a href="/tools/">계산기</a></p>
+  <ul class="list">
+    {posts.map(p => (
+      <li>
+        <a href={`/log/${slug(p.id)}/`}>{p.data.title}</a>
+        {p.data.verdict && <span class={`verdict ${p.data.verdict === 'NO-GO' ? 'no' : ''}`} style="margin-left:8px">{p.data.verdict}</span>}
+        <p>{p.data.description}</p>
+        <p class="meta">{p.data.date.toISOString().slice(0, 10)} · {p.data.series}</p>
+      </li>
+    ))}
+  </ul>
+</Base>

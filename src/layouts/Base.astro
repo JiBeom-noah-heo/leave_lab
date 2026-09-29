@@ -1,0 +1,32 @@
+---
+import '../styles/global.css';
+interface Props { title: string; description: string; lang?: 'ko' | 'th'; }
+const { title, description, lang = 'ko' } = Astro.props;
+const ads = import.meta.env.PUBLIC_ADSENSE_CLIENT;
+const home = lang === 'th' ? '/th/' : '/';
+const nav = lang === 'th'
+  ? [['/th/', 'บันทึก'], ['/tools/', 'เครื่องมือ'], ['/', 'KO']]
+  : [['/', '기록'], ['/tools/', '도구'], ['/th/', 'TH']];
+---
+<!doctype html>
+<html lang={lang}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+  <link rel="alternate" type="application/rss+xml" href="/rss.xml" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=Noto+Sans+Thai:wght@400;500;600&display=swap" />
+  {ads && <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ads}`} crossorigin="anonymous"></script>}
+</head>
+<body>
+  <div class="wrap">
+    <header class="site">
+      <a class="brand" href={home}>{lang === 'th' ? 'บันทึกทดลองของนักพัฒนาลาเลี้ยงลูก' : '육아휴직 개발자 수익화 실험'}</a>
+      <nav>{nav.map(([href, label]) => <a href={href}>{label}</a>)}</nav>
+    </header>
+    <slot />
+  </div>
+</body>
+</html>

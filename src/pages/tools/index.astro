@@ -1,0 +1,11 @@
+---
+import Base from '../../layouts/Base.astro';
+import registry from '../../../public/tools/_registry.json';
+---
+<Base title="셀러·육아휴직 계산기" description="쇼피 국가별 마진 계산기, 육아휴직 중 부업 소득 판정기 등 검색해서 바로 쓰는 계산기 모음. 기준일과 근거 링크를 함께 표시합니다.">
+  <h1>계산기</h1>
+  <p class="meta">모든 도구는 기준일과 근거를 하단에 표시합니다.</p>
+  <div class="tools">
+    {registry.map(t => <a href={`/tools/${t.file}`}>{t.name}<small>{t.summary} · 기준일 {t.asOf}</small></a>)}
+  </div>
+</Base>
