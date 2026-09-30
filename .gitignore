@@ -4,3 +4,4 @@ dist
 .env
 leave-lab.zip
 _inbox/
+__pycache__/
