@@ -6,7 +6,7 @@ const ads = import.meta.env.PUBLIC_ADSENSE_CLIENT;
 const home = lang === 'th' ? '/th/' : '/';
 const nav = lang === 'th'
   ? [['/th/', 'บันทึก'], ['/tools/', 'เครื่องมือ'], ['/', 'KO']]
-  : [['/', '기록'], ['/tools/', '도구'], ['/th/', 'TH']];
+  : [['/', '기록'], ['/tools/', '도구'], ['/about/', '소개'], ['/th/', 'TH']];
 ---
 <!doctype html>
 <html lang={lang}>
@@ -27,6 +27,15 @@ const nav = lang === 'th'
       <nav>{nav.map(([href, label]) => <a href={href}>{label}</a>)}</nav>
     </header>
     <slot />
+    <footer class="site">
+      <nav>
+        <a href="/about/">{lang === 'th' ? 'เกี่ยวกับ (KO)' : '소개'}</a>
+        <a href="/privacy/">{lang === 'th' ? 'นโยบายความเป็นส่วนตัว (KO)' : '개인정보처리방침'}</a>
+        <a href="/contact/">{lang === 'th' ? 'ติดต่อ (KO)' : '문의'}</a>
+        <a href="/rss.xml">RSS</a>
+      </nav>
+      <p>© 2026 leave-lab</p>
+    </footer>
   </div>
 </body>
 </html>
