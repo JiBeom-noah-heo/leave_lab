@@ -5,4 +5,6 @@ export const SITE = {
   contactEmail: '',
   issues: 'https://github.com/JiBeom-noah-heo/leave_lab/issues',
   privacyEffective: '2026-10-05',
+  // 검색엔진 소유 확인
+  naverVerification: '9347967767474a73ebd2f3aaece1f41ea9d9a3ec',
 };

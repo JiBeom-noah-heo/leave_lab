@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { SITE } from '../site';
 interface Props { title: string; description: string; lang?: 'ko' | 'th'; }
 const { title, description, lang = 'ko' } = Astro.props;
 const ads = import.meta.env.PUBLIC_ADSENSE_CLIENT;
@@ -15,6 +16,7 @@ const nav = lang === 'th'
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{title}</title>
   <meta name="description" content={description} />
+  {SITE.naverVerification && <meta name="naver-site-verification" content={SITE.naverVerification} />}
   <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
   <link rel="alternate" type="application/rss+xml" href="/rss.xml" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=Noto+Sans+Thai:wght@400;500;600&display=swap" />
