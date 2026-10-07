@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>위탁판매 가격 판정기 — 이 상품, 올려도 될까?</title>
+<meta name="description" content="도매가·배송비·수수료율·경쟁 가격을 넣으면 위탁판매 자동화에서 실제로 쓰는 규칙(구간별 마크업, 원가 역산, 판매가 상한 배수, 시장가 75분위, 최소구매수량)으로 등록 여부를 GO/NO-GO로 판정합니다. 기준일 2026-10-07.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#f6f5f1;--surface:#fff;--ink:#1d1f22;--muted:#6b6f76;--line:#dcdad3;--accent:#1f5f8b;--accent-soft:#e3edf5;--bad:#a35a1a;--bad-soft:#f8e9dc}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#16181b;--surface:#1f2225;--ink:#e8e7e2;--muted:#9a9ea6;--line:#33373c;--accent:#7fb3d9;--accent-soft:#233543;--bad:#e7b487;--bad-soft:#3a2b1f}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans KR",system-ui,sans-serif;font-size:15px;line-height:1.6;padding:24px 16px 56px}
+.wrap{max-width:640px;margin:0 auto}h1{font-size:22px;margin:0 0 4px}.sub{color:var(--muted);margin:0 0 20px;font-size:14px}
+form{display:grid;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+label{display:grid;gap:4px;font-size:13.5px;color:var(--muted)}
+input,textarea{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+textarea{min-height:70px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:480px){.row{grid-template-columns:1fr}}
+details{font-size:13.5px;color:var(--muted)}summary{cursor:pointer}
+.out{margin-top:16px;background:var(--accent-soft);border-radius:10px;padding:16px}.out.no{background:var(--bad-soft)}
+.verdict{display:inline-block;font-weight:600;font-size:22px;padding:2px 14px;border-radius:999px;background:var(--surface)}
+.out ul{margin:10px 0 0;padding-left:18px;font-size:14px}
+.out table{width:100%;font-size:13.5px;border-collapse:collapse;margin-top:10px}.out td{padding:4px 0;border-bottom:1px solid var(--line)}.out td:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.why{margin-top:24px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-size:14px}.why h2{font-size:15px;margin:0 0 6px}.why a{color:var(--accent)}
+.foot{margin-top:24px;font-size:13px;color:var(--muted)}.foot a{color:var(--accent)}
+</style>
+</head>
+<body><div class="wrap">
+<h1>위탁판매 가격 판정기</h1>
+<p class="sub">이 상품, 올려도 될까? 위탁판매 자동화에서 실제로 쓰는 등록 규칙 그대로 판매가를 정하고 GO / NO-GO / HOLD로 판정합니다.</p>
+<form id="f" onsubmit="return false">
+  <div class="row">
+    <label>도매가 (1개, 원)<input id="whole" type="number" value="16170" min="0"></label>
+    <label>배송비 (원, 무료배송이면 0)<input id="ship" type="number" value="3000" min="0"></label>
+  </div>
+  <div class="row">
+    <label>수수료율 합계 (%)<input id="fee" type="number" step="0.01" min="0" max="100" placeholder="내 스마트스토어 요율" required></label>
+    <label>도매 최소구매수량 (개)<input id="moq" type="number" value="1" min="1" step="1"></label>
+  </div>
+  <label>경쟁 상품 가격 (같은 검색어 상위 상품, 쉼표·줄바꿈으로 구분. 광고 상품은 빼고 10개 이상)
+    <textarea id="market" placeholder="예: 12900, 15800, 16900, 18500, ..."></textarea></label>
+  <details><summary>규칙 값 바꾸기 (기본값은 실제로 쓰는 값)</summary>
+    <div class="row" style="margin-top:8px">
+      <label>최소 마진 (원)<input id="minMargin" type="number" value="2500" min="0"></label>
+      <label>판매가 상한 (도매가의 몇 배)<input id="maxMult" type="number" value="2.5" min="1" step="0.1"></label>
+    </div>
+    <div class="row">
+      <label>시장가 상한 (분위)<input id="pctLimit" type="number" value="75" min="1" max="100"></label>
+      <label>시장 판정 최소 표본 (개)<input id="minSample" type="number" value="10" min="1"></label>
+    </div>
+  </details>
+</form>
+<div class="out" id="out" aria-live="polite"></div>
+
+<div class="why">
+  <h2>이 판정기를 만든 이유</h2>
+  <p>위탁판매 자동화는 이 규칙으로 상품마다 판매가를 정하고 등록 여부를 걸렀습니다. 규칙 하나하나가 실제로 겪은 실패에서 나왔습니다.</p>
+  <ul>
+    <li>구간별 마크업만 쓰면 가격 경계에 사각지대가 생겨, 원가에서 역산한 가격과 비교해 비싼 쪽을 씁니다.</li>
+    <li>싼 물건은 배송비가 판매가 대부분을 차지해 배수가 폭발합니다. 그래서 판매가 상한 배수를 둡니다.</li>
+    <li>마진이 남아도 시장가보다 비싸면 팔리지 않아, 시장 75분위를 넘으면 거릅니다.</li>
+    <li>도매 최소구매수량이 2개 이상이면 주문 1건마다 남는 재고 값만큼 손해입니다.</li>
+  </ul>
+  <p>관련 기록: <a href="/log/2026-10-04-1321-collected-137-listed-0-orders/">538건을 등록했는데 주문이 0건이었다</a> · <a href="/log/2026-10-06-wholesale-price-column-was-retail/">도매 엑셀의 '판매가'는 도매가가 아니었다</a></p>
+</div>
+
+<p class="foot">기준일 2026-10-07. 규칙 값(마크업 1만 원 미만 1.8배·1~3만 원 1.5배·3만 원 이상 1.3배, 최소 마진 2,500원, 판매가 상한 2.5배, 시장가 75분위, 최소 표본 10개, 판매가 10원 단위 내림·역산 올림)은 이 블로그의 위탁판매 자동화가 쓰는 설정값이며 정답이 아닙니다. 수수료율은 판매자 등급·유입 경로마다 달라 기본값을 두지 않았습니다(<a href="https://help.sell.smartstore.naver.com/faq/content.help?faqId=3558" target="_blank" rel="nofollow noopener">스마트스토어 고객센터 '수수료의 종류'</a>). 이 판정기는 수수료를 판매가에 대한 합계 요율로 근사합니다. 입력값은 이 브라우저 안에서만 계산됩니다.<br><span class="sitelinks"><a href="/tools/">다른 계산기</a> · <a href="/about/">소개</a> · <a href="/privacy/">개인정보처리방침</a> · <a href="/contact/">문의</a></span></p>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const won = n => (n < 0 ? "-" : "") + Math.abs(Math.round(n)).toLocaleString("ko-KR") + "원";
+const TIERS = [[10000, 1.8], [30000, 1.5], [Infinity, 1.3]];
+const UNIT = 10;
+function markup(w) { for (const [t, r] of TIERS) if (w < t) return r; }
+function percentile(value, pool) {
+  const below = pool.filter(x => x < value).length, same = pool.filter(x => x === value).length;
+  return (below + same / 2) / pool.length * 100;
+}
+// "12,900, 15,800" (천 단위 쉼표 + 구분 쉼표)와 "9000,10000"(구분 쉼표만)을 모두 읽는다
+function parsePrices(text) {
+  const out = [];
+  for (const tok of text.split(/[\s;\/]+|,\s+/)) {
+    const t = tok.replace(/[원₩]/g, "").trim();
+    if (!t) continue;
+    if (/^\d{1,3}(,\d{3})+$/.test(t)) out.push(parseInt(t.replace(/,/g, "")));
+    else for (const part of t.split(",")) { const n = parseInt(part); if (n > 0) out.push(n); }
+  }
+  return out.filter(n => n > 0).sort((a, b) => a - b);
+}
+function calc() {
+  const out = $("out");
+  if ($("fee").value === "") { out.className = "out"; out.innerHTML = "<p>수수료율 합계를 입력하면 판정합니다.</p>"; return; }
+  const whole = parseFloat($("whole").value) || 0, ship = parseFloat($("ship").value) || 0;
+  const fee = parseFloat($("fee").value) / 100, moq = Math.max(1, Math.floor(parseFloat($("moq").value) || 1));
+  const minMargin = parseFloat($("minMargin").value) || 0, maxMult = parseFloat($("maxMult").value) || 2.5;
+  const pctLimit = parseFloat($("pctLimit").value) || 75, minSample = parseInt($("minSample").value) || 10;
+  const pool = parsePrices($("market").value);
+
+  const reasons = [], notes = [];
+  if (whole <= 0) { out.className = "out no"; out.innerHTML = '<span class="verdict">NO-GO</span><ul><li>도매가를 모르면 판매가를 만들지 않습니다. 0원짜리 판매가가 조용히 생기는 것을 막기 위해서입니다.</li></ul>'; return; }
+  if (fee >= 1) { out.className = "out no"; out.innerHTML = '<span class="verdict">NO-GO</span><ul><li>수수료율이 100% 이상입니다.</li></ul>'; return; }
+
+  const rate = markup(whole);
+  const tierPrice = Math.floor(whole * rate / UNIT) * UNIT;
+  const floorPrice = Math.ceil((whole + ship + minMargin) / (1 - fee) / UNIT) * UNIT;
+  const price = Math.max(tierPrice, floorPrice);
+  const feeAmt = Math.floor(price * fee);
+  const margin = price - whole - ship - feeAmt;
+  const mult = price / whole;
+
+  if (moq > 1) reasons.push(`도매 최소구매수량이 ${moq}개입니다. 주문 1건마다 남는 ${moq - 1}개 값 ${won(whole * (moq - 1))}만큼 손해라, 마진 계산과 상관없이 거릅니다.`);
+  if (margin < minMargin) reasons.push(`실마진 ${won(margin)}이 최소 마진 ${won(minMargin)}보다 작습니다.`);
+  if (price > whole * maxMult) reasons.push(`판매가 ${won(price)}이 도매가의 ${mult.toFixed(1)}배입니다. ${maxMult}배를 넘으면 배송비 같은 고정비가 가격 대부분이라, 묶음배송이 되는 경쟁자에게 집니다.`);
+
+  let pctText = "표본 없음";
+  let hold = false;
+  if (pool.length >= minSample) {
+    const p = percentile(price, pool);
+    const median = pool[Math.floor(pool.length / 2)];
+    pctText = `${Math.round(p)}분위 (표본 ${pool.length}개, 중앙 ${won(median)})`;
+    if (p > pctLimit) reasons.push(`판매가가 시장 ${Math.round(p)}분위로, 상한 ${pctLimit}분위를 넘습니다(시장 중앙 ${won(median)}). 마진이 남아도 시장에서 이기기 어렵습니다.`);
+    if (median < whole) notes.push(`시장 중앙가 ${won(median)}이 도매가보다 낮습니다. 가격 정책이 아니라 소싱 문제입니다.`);
+  } else {
+    hold = true;
+    pctText = pool.length ? `표본 ${pool.length}개 (판정에 ${minSample}개 필요)` : "표본 없음";
+    notes.push(`경쟁 가격 표본이 ${minSample}개보다 적어 시장가 판정을 하지 않았습니다. 모른다고 버리지는 않지만, 통과시킨 상품은 따로 세어 두는 것이 좋습니다.`);
+  }
+
+  const verdict = reasons.length ? "NO-GO" : hold ? "HOLD" : "GO";
+  const lead = verdict === "GO" ? "이 규칙으로는 올려도 됩니다." : verdict === "HOLD" ? "가격·마진 조건은 통과했지만 시장가를 확인하지 못했습니다." : "이 규칙으로는 올리지 않습니다.";
+  out.className = "out" + (verdict === "NO-GO" ? " no" : "");
+  out.innerHTML = `
+    <span class="verdict">${verdict}</span> <span>${lead}</span>
+    ${reasons.length || notes.length ? `<ul>${reasons.concat(notes).map(r => `<li>${r}</li>`).join("")}</ul>` : ""}
+    <table>
+      <tr><td>구간 마크업 가격 (도매가 × ${rate}배, 10원 내림)</td><td>${won(tierPrice)}</td></tr>
+      <tr><td>원가 역산 가격 ((도매가+배송비+최소 마진) ÷ (1−수수료율), 10원 올림)</td><td>${won(floorPrice)}</td></tr>
+      <tr><td><b>판매가 (둘 중 비싼 쪽)</b></td><td><b>${won(price)}</b></td></tr>
+      <tr><td>수수료</td><td>-${won(feeAmt)}</td></tr>
+      <tr><td>실마진</td><td>${won(margin)}</td></tr>
+      <tr><td>도매가 대비 배수</td><td>${mult.toFixed(2)}배</td></tr>
+      <tr><td>시장 분위</td><td>${pctText}</td></tr>
+    </table>`;
+}
+document.querySelectorAll("input,textarea").forEach(el => el.addEventListener("input", calc));
+calc();
+</script>
+</body></html>

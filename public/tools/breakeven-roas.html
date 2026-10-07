@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>손익분기 ROAS·광고비 상한 계산기 (스마트스토어)</title>
+<meta name="description" content="상품 하나에 광고비를 얼마까지 써도 되는지 계산합니다. 광고 전 건당 이익, 손익분기 ROAS, 건당 광고비 상한, 지금 클릭단가·전환율로 본 예상 손익. 기준일 2026-10-07.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#f6f5f1;--surface:#fff;--ink:#1d1f22;--muted:#6b6f76;--line:#dcdad3;--accent:#1f5f8b;--accent-soft:#e3edf5;--bad:#a35a1a}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#16181b;--surface:#1f2225;--ink:#e8e7e2;--muted:#9a9ea6;--line:#33373c;--accent:#7fb3d9;--accent-soft:#233543;--bad:#e7b487}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans KR",system-ui,sans-serif;font-size:15px;line-height:1.6;padding:24px 16px 56px}
+.wrap{max-width:640px;margin:0 auto}h1{font-size:22px;margin:0 0 4px}.sub{color:var(--muted);margin:0 0 20px;font-size:14px}
+form{display:grid;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+fieldset{border:0;padding:0;margin:0;display:grid;gap:12px}legend{font-weight:600;font-size:14px;margin-bottom:4px}
+label{display:grid;gap:4px;font-size:13.5px;color:var(--muted)}
+input{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:480px){.row{grid-template-columns:1fr}}
+.out{margin-top:16px;background:var(--accent-soft);border-radius:10px;padding:16px}
+.out .big{font-size:28px;font-weight:600;font-variant-numeric:tabular-nums}.out .big.neg{color:var(--bad)}
+.out table{width:100%;font-size:13.5px;border-collapse:collapse;margin-top:10px}.out td{padding:4px 0;border-bottom:1px solid var(--line)}.out td:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.decide{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:6px;font-size:14px}.decide li::before{content:"→ ";color:var(--accent)}
+.why{margin-top:24px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-size:14px}.why h2{font-size:15px;margin:0 0 6px}.why a{color:var(--accent)}
+.foot{margin-top:24px;font-size:13px;color:var(--muted)}.foot a{color:var(--accent)}
+</style>
+</head>
+<body><div class="wrap">
+<h1>손익분기 ROAS·광고비 상한 계산기</h1>
+<p class="sub">이 상품에 광고비를 얼마까지 써도 되는지, 지금 클릭단가와 전환율이면 팔릴 때마다 남는지 계산합니다.</p>
+<form id="f" onsubmit="return false">
+  <fieldset><legend>상품 1건</legend>
+    <div class="row">
+      <label>판매가 (원)<input id="price" type="number" value="29900" min="0" step="10"></label>
+      <label>원가 합계 (도매가 + 배송비 등, 원)<input id="cost" type="number" value="18000" min="0"></label>
+    </div>
+    <label>수수료율 합계 (Npay + 판매수수료, %)<input id="fee" type="number" step="0.01" min="0" max="100" placeholder="내 스마트스토어 요율을 직접 입력" required></label>
+  </fieldset>
+  <fieldset><legend>광고 (선택)</legend>
+    <div class="row">
+      <label>클릭당 비용 CPC (원)<input id="cpc" type="number" min="0" placeholder="예: 광고 관리 화면 평균"></label>
+      <label>전환율 (클릭 → 주문, %)<input id="cvr" type="number" min="0" max="100" step="0.01" placeholder="예: 1"></label>
+    </div>
+  </fieldset>
+</form>
+<div class="out" id="out" aria-live="polite"></div>
+
+<div class="why">
+  <h2>이 계산기를 만든 이유</h2>
+  <p>주문이 0건인 상태에서 광고를 켜기 전에, 상품마다 "광고비를 얼마까지 써도 손해가 아닌가"부터 정해야 했습니다. 광고를 켜고 나서는 클릭단가와 전환율로 그 선을 넘는지 확인했습니다. → <a href="/log/2026-10-04-1321-collected-137-listed-0-orders/">538건을 등록했는데 주문이 0건이었다</a></p>
+  <p>원가 합계를 모르면 먼저 <a href="/tools/consign-profit.html">위탁판매 순이익·목표 판매가 계산기</a>로 건당 이익을 확인하세요.</p>
+</div>
+
+<p class="foot">기준일 2026-10-07. ROAS = 광고로 생긴 매출 ÷ 광고비 × 100%. 손익분기 ROAS는 광고비를 빼고 이익이 0원이 되는 ROAS입니다(판매가 ÷ 광고 전 건당 이익 × 100%). 수수료율은 판매자 등급·유입 경로마다 달라 기본값을 두지 않았습니다. 부과 기준은 <a href="https://help.sell.smartstore.naver.com/faq/content.help?faqId=3558" target="_blank" rel="nofollow noopener">스마트스토어 고객센터 '수수료의 종류'</a>를 참고하세요. 이 계산기는 배송비에 붙는 Npay 수수료를 따로 나누지 않고 판매가에 대한 합계 요율로 근사합니다. 입력값은 이 브라우저 안에서만 계산됩니다.<br><span class="sitelinks"><a href="/tools/">다른 계산기</a> · <a href="/about/">소개</a> · <a href="/privacy/">개인정보처리방침</a> · <a href="/contact/">문의</a></span></p>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const won = n => (n < 0 ? "-" : "") + Math.abs(Math.round(n)).toLocaleString("ko-KR") + "원";
+const pct = n => Math.round(n).toLocaleString("ko-KR") + "%";
+function calc() {
+  const out = $("out");
+  if ($("fee").value === "") { out.innerHTML = "<p>수수료율 합계를 입력하면 계산합니다.</p>"; return; }
+  const price = parseFloat($("price").value) || 0, cost = parseFloat($("cost").value) || 0;
+  const fee = parseFloat($("fee").value) / 100;
+  const cpc = parseFloat($("cpc").value), cvr = parseFloat($("cvr").value) / 100;
+  const unit = price * (1 - fee) - cost;            // 광고 전 건당 이익 = 건당 광고비 상한
+  if (unit <= 0) {
+    out.innerHTML = `<div>광고 전 건당 이익</div><div class="big neg">${won(unit)}</div>
+      <ul class="decide"><li>광고비를 한 푼도 쓰지 않아도 손해입니다. 광고보다 가격·원가를 먼저 봐야 합니다.</li></ul>`;
+    return;
+  }
+  const beRoas = price / unit * 100;
+  const decide = [
+    `팔릴 때마다 광고비를 ${won(unit)}까지 써도 손해가 아닙니다.`,
+    `광고 보고서의 ROAS가 ${pct(beRoas)}보다 낮으면 광고로 팔수록 손해입니다.`,
+  ];
+  let rows = "";
+  if (cpc > 0 && cvr > 0) {
+    const cpa = cpc / cvr;                          // 주문 1건을 얻는 데 드는 광고비
+    const net = unit - cpa;
+    const roas = price / cpa * 100;
+    const needCvr = cpc / unit * 100;
+    const maxCpc = unit * cvr;
+    decide.push(net >= 0
+      ? `지금 클릭단가·전환율이면 주문 1건에 광고비 ${won(cpa)}이 들고 ${won(net)}이 남습니다(예상 ROAS ${pct(roas)}).`
+      : `지금 클릭단가·전환율이면 주문 1건에 광고비 ${won(cpa)}이 들어 ${won(-net)} 손해입니다(예상 ROAS ${pct(roas)}).`);
+    decide.push(`손해를 피하려면 전환율이 ${needCvr.toFixed(2)}% 이상이거나, 클릭단가가 ${won(maxCpc)} 이하여야 합니다.`);
+    rows = `<tr><td>주문 1건당 광고비 (CPC ÷ 전환율)</td><td>${won(cpa)}</td></tr>
+      <tr><td>광고비 뺀 건당 이익</td><td>${won(net)}</td></tr>
+      <tr><td>예상 ROAS</td><td>${pct(roas)}</td></tr>`;
+  } else {
+    decide.push("클릭단가와 전환율을 넣으면 지금 광고로 남는지 계산합니다.");
+  }
+  out.innerHTML = `
+    <div>손익분기 ROAS</div>
+    <div class="big">${pct(beRoas)}</div>
+    <ul class="decide">${decide.map(d => `<li>${d}</li>`).join("")}</ul>
+    <table>
+      <tr><td>판매가</td><td>${won(price)}</td></tr>
+      <tr><td>수수료 (${(fee * 100).toFixed(2)}%)</td><td>-${won(price * fee)}</td></tr>
+      <tr><td>원가 합계</td><td>-${won(cost)}</td></tr>
+      <tr><td><b>광고 전 건당 이익 = 건당 광고비 상한</b></td><td><b>${won(unit)}</b></td></tr>
+      ${rows}
+    </table>`;
+}
+document.querySelectorAll("input").forEach(el => el.addEventListener("input", calc));
+calc();
+</script>
+</body></html>

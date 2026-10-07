@@ -1,4 +1,7 @@
 [
-  { "file": "shopee-margin.html", "name": "쇼피 국가별 마진 계산기", "summary": "태국·대만·베트남 수수료·배송비·VAT 반영", "asOf": "2026-09-28", "review": "quarterly" },
-  { "file": "leave-side-income.html", "name": "육아휴직 중 부업 소득 판정기", "summary": "사업소득·근로시간으로 급여 감액 여부", "asOf": "2026-09-28", "review": "yearly" }
+  {"file": "consign-price-check.html", "name": "위탁판매 가격 판정기", "summary": "이 상품 올려도 될까? 마크업·원가 역산·시장가 분위로 GO/NO-GO", "asOf": "2026-10-07", "review": "quarterly"},
+  {"file": "consign-profit.html", "name": "위탁판매 순이익·목표 판매가 계산기", "summary": "스마트스토어 수수료·광고·반품 반영 건당 순이익과 목표 판매가", "asOf": "2026-10-07", "review": "quarterly"},
+  {"file": "breakeven-roas.html", "name": "손익분기 ROAS·광고비 상한 계산기", "summary": "광고비를 얼마까지 써도 되나, 지금 CPC·전환율로 남나", "asOf": "2026-10-07", "review": "quarterly"},
+  {"file": "shopee-margin.html", "name": "쇼피 국가별 마진 계산기", "summary": "태국·대만·베트남 수수료·배송비·VAT 반영", "asOf": "2026-09-28", "review": "quarterly"},
+  {"file": "leave-side-income.html", "name": "육아휴직 중 부업 소득 판정기", "summary": "사업소득·근로시간으로 급여 감액 여부", "asOf": "2026-09-28", "review": "yearly"}
 ]
