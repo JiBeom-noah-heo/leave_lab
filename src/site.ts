@@ -4,7 +4,7 @@ export const SITE = {
   // 공개해도 되는 문의용 이메일. 비워 두면 문의 페이지는 GitHub 이슈만 안내한다.
   contactEmail: '',
   issues: 'https://github.com/JiBeom-noah-heo/leave_lab/issues',
-  privacyEffective: '2026-10-05',
+  privacyEffective: '2026-10-07',
   // 검색엔진 소유 확인
   naverVerification: '9347967767474a73ebd2f3aaece1f41ea9d9a3ec',
 };
