@@ -1,15 +1,20 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
+import { verdictClass, ymd } from '../../ui';
 const posts = (await getCollection('log', p => p.data.lang === 'th' && !p.data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const slug = (id: string) => id.replace(/^th\//, '');
 ---
 <Base lang="th" title="บันทึกทดลองของนักพัฒนาลาเลี้ยงลูก" description="นักพัฒนาชาวเกาหลีที่ลาเลี้ยงลูก 1 ปี ทดลองสร้างรายได้ด้วย Claude Code และบันทึกผลจริง — สำหรับผู้ขาย Shopee และคนที่อยากทำระบบอัตโนมัติ">
-  <h1>บันทึกเฉพาะผลลัพธ์และคำตัดสิน</h1>
+  <section class="hero"><h1>บันทึกเฉพาะผลลัพธ์และคำตัดสิน</h1></section>
   <ul class="list">
     {posts.map(p => (
-      <li><a href={`/th/log/${slug(p.id)}/`}>{p.data.title}</a><p>{p.data.description}</p><p class="meta">{p.data.date.toISOString().slice(0, 10)}</p></li>
+      <li>
+        <div class="top"><span>{ymd(p.data.date)}</span>{p.data.verdict && <span class={`verdict ${verdictClass(p.data.verdict)}`}>{p.data.verdict}</span>}</div>
+        <a class="t" href={`/th/log/${slug(p.id)}/`}>{p.data.title}</a>
+        <p>{p.data.description}</p>
+      </li>
     ))}
   </ul>
 </Base>
