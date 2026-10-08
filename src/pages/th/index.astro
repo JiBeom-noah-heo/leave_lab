@@ -1,20 +1,17 @@
 ---
 import Base from '../../layouts/Base.astro';
+import LogList from '../../components/LogList.astro';
 import { getCollection } from 'astro:content';
-import { verdictClass, ymd } from '../../ui';
 const posts = (await getCollection('log', p => p.data.lang === 'th' && !p.data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const slug = (id: string) => id.replace(/^th\//, '');
 ---
 <Base lang="th" title="บันทึกทดลองของนักพัฒนาลาเลี้ยงลูก" description="นักพัฒนาชาวเกาหลีที่ลาเลี้ยงลูก 1 ปี ทดลองสร้างรายได้ด้วย Claude Code และบันทึกผลจริง — สำหรับผู้ขาย Shopee และคนที่อยากทำระบบอัตโนมัติ">
-  <section class="hero"><h1>บันทึกเฉพาะผลลัพธ์และคำตัดสิน</h1></section>
-  <ul class="list">
-    {posts.map(p => (
-      <li>
-        <div class="top"><span>{ymd(p.data.date)}</span>{p.data.verdict && <span class={`verdict ${verdictClass(p.data.verdict)}`}>{p.data.verdict}</span>}</div>
-        <a class="t" href={`/th/log/${slug(p.id)}/`}>{p.data.title}</a>
-        <p>{p.data.description}</p>
-      </li>
-    ))}
-  </ul>
+  <main class="container page">
+    <div class="page-head">
+      <span class="eyebrow">EXPERIMENT LOG · TH</span>
+      <h1>บันทึกเฉพาะผลลัพธ์และคำตัดสิน</h1>
+      <p class="lead">นักพัฒนาชาวเกาหลีที่ลาเลี้ยงลูก 1 ปี ทดลองหารายได้นอกบริษัท และบันทึกตัวเลขจริงทั้งที่สำเร็จและล้มเหลว</p>
+    </div>
+    <LogList posts={posts} lang="th" id="th-logs" />
+  </main>
 </Base>

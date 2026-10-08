@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>leave-lab 메인</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F5F0}
+a{color:#1F5E46}a:hover{color:#123D2D}
+.paper{background-color:#F3F5F0;background-image:linear-gradient(#E3E8DF 1px,transparent 1px),linear-gradient(90deg,#E3E8DF 1px,transparent 1px);background-size:24px 24px}
+</style>
+</helmet>
+<div class="paper" style="font-family: 'IBM Plex Sans KR', sans-serif; color: #17201B; min-height: 100vh">
+
+<header style="border-bottom: 1px solid #17201B; background: #F3F5F0">
+<div style="max-width: 1120px; margin: 0 auto; padding: 16px 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+<a href="#" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #17201B">
+<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#17201B" stroke-width="1.8" aria-hidden="true"><path d="M10 3h8M12 3v7L5 23a2 2 0 0 0 1.8 2.9h14.4A2 2 0 0 0 23 23l-7-13V3"/><path d="M8.5 17h11" stroke="{{accent}}"/></svg>
+<span style="font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 18px; letter-spacing: -0.02em">leave-lab</span>
+</a>
+<nav aria-label="주 메뉴" style="display: flex; flex-wrap: wrap; gap: 4px; font-size: 15px">
+<a href="#logs" style="padding: 12px 12px; text-decoration: none; color: #17201B">실험 로그</a>
+<a href="#tools" style="padding: 12px 12px; text-decoration: none; color: #17201B">계산기</a>
+<a href="#about" style="padding: 12px 12px; text-decoration: none; color: #17201B">소개</a>
+<a href="#" style="padding: 12px 12px; text-decoration: none; color: #17201B; font-family: 'IBM Plex Mono', monospace; font-size: 14px">KO / ไทย</a>
+</nav>
+</div>
+</header>
+
+<section style="max-width: 1120px; margin: 0 auto; padding: 72px 20px 56px; display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start">
+<div style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 24px">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.08em; color: #1F5E46">EXPERIMENT LOG · 2026–</span>
+<h1 style="margin: 0; font-size: clamp(36px, 6vw, 60px); line-height: 1.15; letter-spacing: -0.03em; font-weight: 700">육아휴직 개발자의<br>수익화 실험실</h1>
+<p style="margin: 0; font-size: 18px; line-height: 1.7; color: #3D4A42; max-width: 560px">두 아이를 키우며 1년 동안 시도하는 작은 실험들. 가설, 과정, 숫자, 실패까지 그대로 기록합니다.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 12px">
+<a href="#logs" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; background: {{accent}}; color: #FFFFFF; text-decoration: none; font-weight: 500; border-radius: 4px">최신 실험 보기</a>
+<a href="#tools" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; border: 1.5px solid #17201B; color: #17201B; text-decoration: none; font-weight: 500; border-radius: 4px; background: #F3F5F0">육아휴직 급여 계산하기</a>
+</div>
+</div>
+
+<aside aria-label="실험 현황" style="flex: 1 1 300px; min-width: 0; background: #FFFFFF; border: 1.5px solid #17201B; border-radius: 4px; box-shadow: 6px 6px 0 #17201B">
+<div style="padding: 14px 20px; border-bottom: 1px dashed #9AA59E; display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 13px">
+<span>LAB STATUS</span>
+<span style="color: #1F5E46">● 진행 중</span>
+</div>
+<div style="padding: 20px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 13px; color: #56635B">휴직</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 26px; font-weight: 600">D+[N]</span></div>
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 13px; color: #56635B">진행 중 실험</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 26px; font-weight: 600">[N]개</span></div>
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 13px; color: #56635B">이번 달 수익</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 26px; font-weight: 600">₩[금액]</span></div>
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 13px; color: #56635B">발행 글</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 26px; font-weight: 600">[N]편</span></div>
+</div>
+<div style="padding: 14px 20px; border-top: 1px dashed #9AA59E; font-size: 14px; color: #3D4A42">매월 1일 수익 리포트 공개</div>
+</aside>
+</section>
+
+<section id="tools" style="background: #17201B; color: #F3F5F0">
+<div style="max-width: 1120px; margin: 0 auto; padding: 56px 20px; display: flex; flex-direction: column; gap: 28px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.08em; color: #8FD3B1">TOOLS</span>
+<h2 style="margin: 0; font-size: 30px; letter-spacing: -0.02em">직접 만든 계산기</h2>
+</div>
+<a href="#" style="color: #8FD3B1; font-size: 15px; padding: 12px 0">전체 보기 →</a>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px">
+<a href="#" style="grid-column: span 2; min-width: 0; display: flex; flex-direction: column; gap: 14px; padding: 28px; background: #F3F5F0; color: #17201B; text-decoration: none; border-radius: 4px">
+<span style="align-self: flex-start; font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 4px 8px; background: {{accent}}; color: #FFFFFF; border-radius: 2px">대표 도구</span>
+<span style="font-size: 24px; font-weight: 700; letter-spacing: -0.02em">육아휴직 급여·복직 계산기</span>
+<span style="font-size: 15px; line-height: 1.6; color: #3D4A42">통상임금과 휴직 기간을 넣으면 월별 수령액과 복직 후 지급분을 한 번에 보여줍니다.</span>
+<span style="font-weight: 500; color: #1F5E46">계산하러 가기 →</span>
+</a>
+<div style="display: flex; flex-direction: column; gap: 10px; padding: 24px; border: 1px dashed #56635B; border-radius: 4px">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #9AA59E">준비 중</span>
+<span style="font-size: 18px; font-weight: 500">[다음 계산기]</span>
+<span style="font-size: 14px; color: #B7C0BA; line-height: 1.6">예: 부모급여·아동수당 합산 계산기</span>
+</div>
+</div>
+</div>
+</section>
+
+<section id="logs" style="max-width: 1120px; margin: 0 auto; padding: 64px 20px; display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.08em; color: #1F5E46">LATEST LOGS</span>
+<h2 style="margin: 0; font-size: 30px; letter-spacing: -0.02em">최근 실험 로그</h2>
+</div>
+<div role="group" aria-label="카테고리 필터" style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+<button type="button" onClick="{{t.pick}}" aria-pressed="{{t.pressed}}" style="{{t.style}}">{{t.label}}</button>
+</sc-for>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; border-top: 1.5px solid #17201B">
+<sc-for list="{{posts}}" as="p" hint-placeholder-count="5">
+<a href="#" style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 20px; padding: 20px 4px; border-bottom: 1px solid #C9D1C8; text-decoration: none; color: #17201B; background: #F3F5F0">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #56635B; width: 72px">{{p.no}}</span>
+<span style="flex: 1 1 320px; min-width: 0; font-size: 18px; font-weight: 500; line-height: 1.5">{{p.title}}</span>
+<span style="font-size: 13px; padding: 3px 10px; border: 1px solid #17201B; border-radius: 999px">{{p.cat}}</span>
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: {{p.statusColor}}">{{p.status}}</span>
+</a>
+</sc-for>
+</div>
+</section>
+
+<section id="about" style="max-width: 1120px; margin: 0 auto; padding: 0 20px 72px">
+<div style="display: flex; flex-wrap: wrap; gap: 32px; padding: 36px; background: #FFFFFF; border: 1.5px solid #17201B; border-radius: 4px">
+<div style="flex: 999 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.08em; color: #1F5E46">RESEARCHER</span>
+<h2 style="margin: 0; font-size: 26px; letter-spacing: -0.02em">JB · 프론트엔드 개발자, 두 아이 아빠</h2>
+<p style="margin: 0; font-size: 16px; line-height: 1.7; color: #3D4A42">산업공학을 전공하고 6년 넘게 웹을 만들었습니다. 휴직 동안 회사 밖에서 혼자 돈을 벌 수 있는지 실험하고, 그 과정을 한국어와 태국어로 남깁니다.</p>
+</div>
+<form style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 10px" onSubmit="{{noop}}">
+<label for="email" style="font-size: 15px; font-weight: 500">월간 실험 리포트 받기</label>
+<input id="email" type="email" placeholder="이메일 주소" style="min-height: 48px; padding: 0 14px; border: 1.5px solid #17201B; border-radius: 4px; font-size: 16px; font-family: inherit; background: #F3F5F0">
+<button type="submit" style="min-height: 48px; border: 0; border-radius: 4px; background: #17201B; color: #FFFFFF; font-size: 16px; font-weight: 500; font-family: inherit; cursor: pointer">구독하기</button>
+</form>
+</div>
+</section>
+
+<footer style="border-top: 1px solid #17201B; background: #F3F5F0">
+<div style="max-width: 1120px; margin: 0 auto; padding: 24px 20px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 14px; color: #56635B">
+<span style="font-family: 'IBM Plex Mono', monospace">© leave-lab</span>
+<span>모든 숫자는 실제 기록이며, 투자 권유가 아닙니다.</span>
+</div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#1F5E46","options":["#1F5E46","#1D4ED8","#B45309","#7C3AED"]},"$preview":{"width":1280,"height":2100}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { tab: '전체' }; }
+  renderVals() {
+    var accent = this.props.accent ?? '#1F5E46';
+    var self = this;
+    var all = [
+      { no: 'EXP-05', title: '갤럭시 워치로 베이비 모니터 앱 만들기, 첫 주 기록', cat: '개발', status: '진행 중' },
+      { no: 'EXP-04', title: '블로그 자동 발행 파이프라인: 글 하나에 드는 시간 측정', cat: '자동화', status: '진행 중' },
+      { no: 'EXP-03', title: '음력 달력 앱을 Flutter로 옮기면서 배운 것', cat: '개발', status: '진행 중' },
+      { no: 'EXP-02', title: '육아휴직 급여 계산기를 만든 이유와 검색 유입 [N]주 차', cat: '수익', status: '측정 중' },
+      { no: 'EXP-01', title: '휴직 첫 달, 하루 몇 시간을 일에 쓸 수 있었나', cat: '육아', status: '완료' }
+    ];
+    var labels = ['전체', '개발', '자동화', '수익', '육아'];
+    var tabs = labels.map(function (l) {
+      var on = self.state.tab === l;
+      return {
+        label: l,
+        pressed: on ? 'true' : 'false',
+        pick: function () { self.setState({ tab: l }); },
+        style: 'min-height: 44px; padding: 0 16px; border-radius: 999px; font-size: 14px; font-family: inherit; cursor: pointer; border: 1.5px solid #17201B; ' + (on ? 'background: #17201B; color: #FFFFFF' : 'background: #F3F5F0; color: #17201B')
+      };
+    });
+    var posts = all
+      .filter(function (p) { return self.state.tab === '전체' || p.cat === self.state.tab; })
+      .map(function (p) {
+        return Object.assign({}, p, { statusColor: p.status === '완료' ? '#56635B' : accent });
+      });
+    return { accent: accent, tabs: tabs, posts: posts, noop: function (e) { e.preventDefault(); } };
+  }
+}
+</script>
+</body>
+</html>

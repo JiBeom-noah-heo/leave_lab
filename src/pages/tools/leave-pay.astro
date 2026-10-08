@@ -1,0 +1,79 @@
+---
+// 육아휴직 급여 계산기 (design/Calculator.dc.html). 계산 규칙은 src/lib/leavePay.ts에 있다.
+import Base from '../../layouts/Base.astro';
+import { RULES, FLOOR, BASIS_YEAR, MAX_MONTHS, DEFAULT_WAGE, ruleLabel, won } from '../../lib/leavePay';
+const year = BASIS_YEAR ?? '[기준 연도]';
+---
+<Base title="육아휴직 급여 계산기 — leave-lab" description="월 통상임금과 휴직 기간을 넣으면 달마다 받는 육아휴직 급여와 총액, 월 평균을 바로 보여 줍니다. 구간별 지급률과 상한·하한을 계산 방식에 그대로 적었습니다.">
+  <main class="container page">
+    <nav class="crumbs" aria-label="현재 위치"><a href="/">홈</a><span>/</span><a href="/tools/">계산기</a><span>/</span><span>육아휴직 급여</span></nav>
+
+    <div class="page-head">
+      <span class="eyebrow">TOOL-01 · {year} 기준</span>
+      <h1>육아휴직 급여 계산기</h1>
+      <p class="lead">월 통상임금과 휴직 기간을 넣으면 달마다 받는 금액과 총액을 바로 보여줍니다.</p>
+    </div>
+
+    <div class="calc-cols">
+      <form class="card calc-form" aria-label="입력" onsubmit="return false">
+        <span class="k">INPUT</span>
+        <div class="field">
+          <label for="wage">월 통상임금 (원)</label>
+          <input id="wage" type="number" inputmode="numeric" min="0" step="10000" value={DEFAULT_WAGE} />
+          <span class="hint">세전 기본급과 고정 수당을 합한 금액</span>
+        </div>
+        <div class="field">
+          <div class="between"><label for="months">휴직 기간</label><span class="val"><span id="months-val">{MAX_MONTHS}</span>개월</span></div>
+          <input id="months" type="range" min="1" max={MAX_MONTHS} step="1" value={MAX_MONTHS} />
+          <div class="ticks"><span>1</span><span>{Math.round(MAX_MONTHS / 2)}</span><span>{MAX_MONTHS}</span></div>
+        </div>
+        <div class="notice">구간별 지급률과 상한액은 {year} 고용노동부 기준으로 맞춰야 합니다. 실제 적용 전 고용24에서 확인하세요.</div>
+      </form>
+
+      <section class="calc-result" aria-label="결과">
+        <div class="kpis">
+          <div class="kpi dark"><small>총 예상 수령액</small><b>₩<span id="total">0</span></b></div>
+          <div class="kpi"><small>월 평균</small><b>₩<span id="avg">0</span></b></div>
+        </div>
+        <div class="card lift">
+          <div class="card-head"><span>MONTHLY</span><span>단위: 원</span></div>
+          <div class="bars" id="bars" aria-live="polite"></div>
+        </div>
+      </section>
+    </div>
+
+    <section class="rules">
+      <h2>계산 방식</h2>
+      <div class="rule-list">
+        {RULES.map((r, i) => <div class="rule"><span class="k">{ruleLabel(i)}</span><span>통상임금의 {Math.round(r.rate * 100)}%, 상한 {won(r.cap)}원</span></div>)}
+        <div class="rule"><span class="k">하한</span><span>계산액이 {won(FLOOR)}원보다 적으면 {won(FLOOR)}원</span></div>
+      </div>
+      <p class="fine">이 계산기는 참고용이며 실제 지급액은 고용센터 심사 결과에 따릅니다. 입력값은 이 브라우저 안에서만 계산되고 전송·저장되지 않습니다.</p>
+    </section>
+
+    <a class="card related" href="/tools/leave-side-income.html">
+      <span><span class="k">함께 보기</span><span class="t">육아휴직 중 부업 소득 판정기</span></span>
+      <span class="go">열기 →</span>
+    </a>
+  </main>
+</Base>
+
+<script>
+  import { calcLeavePay, won } from '../../lib/leavePay';
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const wageEl = $<HTMLInputElement>('wage'), monthsEl = $<HTMLInputElement>('months');
+  function update() {
+    const wage = Number(wageEl.value) || 0;
+    const months = Number(monthsEl.value) || 0;
+    const r = calcLeavePay(wage, months);
+    $('months-val').textContent = String(months);
+    $('total').textContent = won(r.total);
+    $('avg').textContent = won(r.avg);
+    $('bars').innerHTML = r.amounts.map((v, i) =>
+      `<div class="bar-row"><span class="l">${i + 1}월</span><div class="track"><div class="fill" style="width:${Math.round(v / r.max * 100)}%"></div></div><span class="a">${won(v)}</span></div>`
+    ).join('');
+  }
+  wageEl.addEventListener('input', update);
+  monthsEl.addEventListener('input', update);
+  update();
+</script>

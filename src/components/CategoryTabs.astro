@@ -1,0 +1,30 @@
+---
+// 카테고리 탭. target은 LogList의 id. 글의 data-cat과 버튼의 data-cat을 맞춰 보여 주고 숨긴다.
+import { CATEGORIES } from '../ui';
+interface Props { target: string }
+const { target } = Astro.props;
+const tabs = ['전체', ...CATEGORIES];
+---
+<div class="tabs" role="group" aria-label="카테고리 필터" data-tabs={target}>
+  {tabs.map((t, i) => <button type="button" data-cat={t} aria-pressed={i === 0 ? 'true' : 'false'}>{t}</button>)}
+</div>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-tabs]').forEach(group => {
+    const list = document.getElementById(group.dataset.tabs ?? '');
+    if (!list) return;
+    group.addEventListener('click', e => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-cat]');
+      if (!btn) return;
+      group.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+      const cat = btn.dataset.cat;
+      let shown = 0;
+      list.querySelectorAll<HTMLElement>('.log-row').forEach(row => {
+        const on = cat === '전체' || row.dataset.cat === cat;
+        row.hidden = !on;
+        if (on) shown++;
+      });
+      const empty = list.querySelector<HTMLElement>('.log-empty');
+      if (empty) empty.hidden = shown > 0;
+    });
+  });
+</script>

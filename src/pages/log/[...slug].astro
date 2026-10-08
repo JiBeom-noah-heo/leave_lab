@@ -1,40 +1,17 @@
 ---
-import Base from '../../layouts/Base.astro';
-import { getCollection, render } from 'astro:content';
-import { verdictClass, ymd } from '../../ui';
+import PostLayout from '../../layouts/PostLayout.astro';
+import { getCollection } from 'astro:content';
+import { ymd } from '../../ui';
 export async function getStaticPaths() {
   const posts = (await getCollection('log', p => p.data.lang === 'ko' && !p.data.draft))
     .sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
   const slug = (id: string) => id.replace(/^ko\//, '');
-  const brief = (q: typeof posts[number]) => ({ slug: slug(q.id), title: q.data.title });
+  const brief = (q: typeof posts[number]) => ({ slug: slug(q.id), title: q.data.title, label: q.data.expId ?? ymd(q.data.date) });
   return posts.map((p, i) => ({
     params: { slug: slug(p.id) },
     props: { p, prev: i > 0 ? brief(posts[i - 1]) : null, next: i < posts.length - 1 ? brief(posts[i + 1]) : null },
   }));
 }
 const { p, prev, next } = Astro.props;
-const { Content } = await render(p);
-const ads = import.meta.env.PUBLIC_ADSENSE_CLIENT;
 ---
-<Base title={p.data.title} description={p.data.description}>
-  <article class="post log">
-    <h1>{p.data.title}</h1>
-    <p class="meta">
-      <span>{ymd(p.data.date)}</span>
-      <span class="badge">{p.data.series}</span>
-      {p.data.verdict && <span class={`verdict ${verdictClass(p.data.verdict)}`}>{p.data.verdict}</span>}
-    </p>
-    <div class="body"><Content /></div>
-    {p.data.tags.length > 0 && <div class="tags">{p.data.tags.map(t => <span>#{t}</span>)}</div>}
-    {ads && <div class="ad"><ins class="adsbygoogle" style="display:block" data-ad-client={ads} data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script></div>}
-    {p.data.sources.length > 0 && (
-      <div class="sources"><strong>출처</strong><ul>{p.data.sources.map(s => <li><a href={s.url} rel="nofollow noopener" target="_blank">{s.title}</a></li>)}</ul></div>
-    )}
-    {(prev || next) && (
-      <nav class="pn" aria-label="이전·다음 글">
-        {prev ? <a href={`/log/${prev.slug}/`}><small>← 이전 기록</small>{prev.title}</a> : <span />}
-        {next && <a class="next" href={`/log/${next.slug}/`}><small>다음 기록 →</small>{next.title}</a>}
-      </nav>
-    )}
-  </article>
-</Base>
+<PostLayout p={p} prev={prev} next={next} />

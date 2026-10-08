@@ -1,0 +1,84 @@
+---
+// 글 상세 공통 레이아웃 (design/Post.dc.html). ko/th 글 페이지가 함께 쓴다.
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import Base from './Base.astro';
+import Subscribe from '../components/Subscribe.astro';
+import { SITE } from '../site';
+import { ymd, readingMinutes, statusOf } from '../ui';
+
+export interface Brief { slug: string; title: string; label: string }
+interface Props { p: CollectionEntry<'log'>; prev: Brief | null; next: Brief | null; lang?: 'ko' | 'th' }
+const { p, prev, next, lang = 'ko' } = Astro.props;
+const { Content, headings } = await render(p);
+const d = p.data;
+const th = lang === 'th';
+const base = th ? '/th/log/' : '/log/';
+const toc = headings.filter(h => h.depth === 2);
+const label = d.expId ?? d.series;
+const s = statusOf(d);
+const hasCard = Boolean(d.hypothesis || d.method || d.result);
+const ads = import.meta.env.PUBLIC_ADSENSE_CLIENT;
+const t = th
+  ? { home: 'หน้าแรก', logs: 'บันทึก', read: (m: number) => `อ่าน ${m} นาที`, started: 'เริ่ม', published: 'เผยแพร่', contents: 'CONTENTS', sources: 'SOURCES', prev: '←', next: '→' }
+  : { home: '홈', logs: '실험 로그', read: (m: number) => `읽는 데 ${m}분`, started: '시작', published: '발행', contents: 'CONTENTS', sources: 'SOURCES', prev: '←', next: '→' };
+---
+<Base title={d.title} description={d.description} lang={lang}>
+  <main class="container post-main">
+    <nav class="crumbs" aria-label="현재 위치">
+      <a href={th ? '/th/' : '/'}>{t.home}</a><span>/</span><a href={th ? '/th/' : '/log/'}>{t.logs}</a><span>/</span><span>{label}</span>
+    </nav>
+
+    <div class="post-head">
+      <div class="labels">
+        {d.expId && <span class="id">{d.expId}</span>}
+        <span class="pill">{d.category ?? d.series}</span>
+        {s.label && <span class={`status ${s.cls}`}>● {s.label}</span>}
+      </div>
+      <h1>{d.title}</h1>
+      <div class="byline">
+        <span>{SITE.author}</span><span>{ymd(d.date)}</span><span>{t.read(readingMinutes(p.body ?? ''))}</span>
+      </div>
+    </div>
+
+    {hasCard && (
+      <section class="card lift exp-card" aria-label="실험 요약">
+        <div class="card-head"><span>EXPERIMENT CARD</span><span>{d.startedOn ? `${t.started} ${ymd(d.startedOn)}` : `${t.published} ${ymd(d.date)}`}</span></div>
+        <div class="grid">
+          {d.hypothesis && <div class="cell"><span class="k">HYPOTHESIS</span><span class="v">{d.hypothesis}</span></div>}
+          {d.method && <div class="cell"><span class="k">METHOD</span><span class="v">{d.method}</span></div>}
+          {d.result && <div class="cell"><span class="k">RESULT</span><span class="v">{d.result}</span></div>}
+        </div>
+      </section>
+    )}
+
+    <div class="post-cols">
+      <article class="prose log"><Content /></article>
+      {toc.length > 0 && (
+        <aside class="card toc" aria-label="목차">
+          <span class="k">{t.contents}</span>
+          {toc.map(h => <a href={`#${h.slug}`}>{h.text}</a>)}
+        </aside>
+      )}
+    </div>
+
+    {d.tags.length > 0 && <div class="tags">{d.tags.map(tag => <span>#{tag}</span>)}</div>}
+    {ads && <div class="ad"><ins class="adsbygoogle" style="display:block" data-ad-client={ads} data-ad-format="auto" data-full-width-responsive="true"></ins><script is:inline>(adsbygoogle=window.adsbygoogle||[]).push({});</script></div>}
+
+    {d.sources.length > 0 && (
+      <section class="card sources" aria-label="출처">
+        <div class="card-head"><span>{t.sources}</span><span>{d.sources.length}</span></div>
+        <ul>{d.sources.map(src => <li><a href={src.url} rel="nofollow noopener" target="_blank">{src.title}</a></li>)}</ul>
+      </section>
+    )}
+
+    {(prev || next) && (
+      <nav class="pn" aria-label="이전·다음 글">
+        {prev ? <a class="card" href={`${base}${prev.slug}/`}><span class="k">{t.prev} {prev.label}</span><span class="t">{prev.title}</span></a> : <span />}
+        {next && <a class="card next" href={`${base}${next.slug}/`}><span class="k">{next.label} {t.next}</span><span class="t">{next.title}</span></a>}
+      </nav>
+    )}
+
+    <Subscribe variant="band" id="subscribe-post" />
+  </main>
+</Base>

@@ -1,0 +1,17 @@
+---
+import Base from '../../layouts/Base.astro';
+import LogList from '../../components/LogList.astro';
+import CategoryTabs from '../../components/CategoryTabs.astro';
+import { getCollection } from 'astro:content';
+const posts = (await getCollection('log', p => p.data.lang === 'ko' && !p.data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+<Base title="실험 로그 — leave-lab" description="육아휴직 개발자의 수익화 실험 기록 전체. 검증 일지와 실험 로그를 분류별로 봅니다.">
+  <main class="container page">
+    <div class="section-head">
+      <div class="titles"><span class="eyebrow">ALL LOGS</span><h1 style="margin:0;font-size:30px;letter-spacing:-.02em">실험 로그 <span class="eyebrow">{posts.length}</span></h1></div>
+      <CategoryTabs target="all-logs" />
+    </div>
+    <LogList posts={posts} id="all-logs" />
+  </main>
+</Base>

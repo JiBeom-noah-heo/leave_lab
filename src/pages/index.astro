@@ -1,35 +1,84 @@
 ---
 import Base from '../layouts/Base.astro';
+import LogList from '../components/LogList.astro';
+import CategoryTabs from '../components/CategoryTabs.astro';
+import Subscribe from '../components/Subscribe.astro';
 import { getCollection } from 'astro:content';
 import registry from '../../public/tools/_registry.json';
-import { verdictClass, ymd } from '../ui';
+import { SITE } from '../site';
+
 const posts = (await getCollection('log', p => p.data.lang === 'ko' && !p.data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const slug = (id: string) => id.replace(/^ko\//, '');
-const first = posts[posts.length - 1];
+const latest = posts.slice(0, 5);
+const active = posts.filter(p => p.data.status && p.data.status !== '완료').length;
+const dPlus = SITE.leaveStart ? Math.floor((Date.now() - new Date(SITE.leaveStart).getTime()) / 86_400_000) : null;
+const featured = registry.find(t => 'featured' in t && t.featured) ?? registry[0];
+const others = registry.filter(t => t !== featured);
 ---
-<Base title="육아휴직 개발자 수익화 실험" description="육아휴직 1년 동안 Claude Code로 프로젝트를 만들고 실제 수익을 기록합니다. 검증 일지, 주간 실험 로그, 셀러용 계산기.">
-  <section class="hero">
-    <h1>결과와 판정만 기록합니다</h1>
-    <p class="lead">육아휴직 중인 개발자가 위탁판매 자동화 같은 수익화 실험을 직접 해 보고, 무엇을 했고 결과가 어땠고 그래서 어떻게 판단했는지만 남깁니다. 숫자에는 기준일을, 판정에는 출처를 붙입니다.</p>
-    <div class="stats">
-      <div class="stat"><b>{posts.length}편</b>발행한 기록</div>
-      <div class="stat"><b>{registry.length}개</b><a href="/tools/">계산기</a></div>
-      {first && <div class="stat"><b>{ymd(first.data.date)}</b>기록 시작</div>}
+<Base title="육아휴직 개발자의 수익화 실험실 — leave-lab" description="육아휴직 1년 동안 시도하는 작은 수익화 실험들. 가설, 과정, 숫자, 실패까지 그대로 기록합니다. 실험 로그와 직접 만든 계산기.">
+  <section class="container hero">
+    <div class="hero-text">
+      <span class="eyebrow">EXPERIMENT LOG · 2026–</span>
+      <h1>육아휴직 개발자의<br>수익화 실험실</h1>
+      <p class="lead">두 아이를 키우며 1년 동안 시도하는 작은 실험들. 가설, 과정, 숫자, 실패까지 그대로 기록합니다.</p>
+      <div class="actions">
+        <a class="btn" href="#logs">최신 실험 보기</a>
+        <a class="btn ghost" href={`/tools/${featured.file}`}>육아휴직 급여 계산하기</a>
+      </div>
+    </div>
+    <aside class="card lift lab-status" aria-label="실험 현황">
+      <div class="card-head"><span>LAB STATUS</span><span style="color:var(--accent)">● 진행 중</span></div>
+      <div class="grid">
+        <div class="stat"><small>휴직</small><b class={dPlus === null ? 'todo' : ''}>D+{dPlus ?? '[N]'}</b></div>
+        <div class="stat"><small>진행 중 실험</small><b>{active}개</b></div>
+        <div class="stat"><small>이번 달 수익</small><b class={SITE.monthlyRevenue === null ? 'todo' : ''}>₩{SITE.monthlyRevenue === null ? '[금액]' : SITE.monthlyRevenue.toLocaleString('ko-KR')}</b></div>
+        <div class="stat"><small>발행 글</small><b>{posts.length}편</b></div>
+      </div>
+      <div class="card-foot">{SITE.statusFootnote}</div>
+    </aside>
+  </section>
+
+  <section id="tools" class="band">
+    <div class="container">
+      <div class="section-head">
+        <div class="titles"><span class="eyebrow light">TOOLS</span><h2>직접 만든 계산기</h2></div>
+        <a class="more" href="/tools/">전체 보기 →</a>
+      </div>
+      <div class="tool-grid">
+        <a class="tool-feature" href={`/tools/${featured.file}`}>
+          <span class="tag-accent">대표 도구</span>
+          <span class="name">{featured.name}</span>
+          <span class="desc">{featured.summary}</span>
+          <span class="go">계산하러 가기 →</span>
+        </a>
+        {others.map(t => (
+          <a class="tool-mini" href={`/tools/${t.file}`}>
+            <span class="k">기준일 {t.asOf}</span>
+            <span class="name">{t.name}</span>
+            <span class="desc">{t.summary}</span>
+          </a>
+        ))}
+      </div>
     </div>
   </section>
-  <p class="section-h">최근 기록</p>
-  <ul class="list">
-    {posts.map(p => (
-      <li>
-        <div class="top">
-          <span>{ymd(p.data.date)}</span>
-          <span class="badge">{p.data.series}</span>
-          {p.data.verdict && <span class={`verdict ${verdictClass(p.data.verdict)}`}>{p.data.verdict}</span>}
-        </div>
-        <a class="t" href={`/log/${slug(p.id)}/`}>{p.data.title}</a>
-        <p>{p.data.description}</p>
-      </li>
-    ))}
-  </ul>
+
+  <section id="logs" class="container logs">
+    <div class="section-head">
+      <div class="titles"><span class="eyebrow">LATEST LOGS</span><h2>최근 실험 로그</h2></div>
+      <CategoryTabs target="latest-logs" />
+    </div>
+    <LogList posts={latest} id="latest-logs" />
+    <a class="more" href="/log/" style="align-self:flex-end;padding:4px 0">실험 로그 전체 보기 →</a>
+  </section>
+
+  <section id="about" class="container about">
+    <div class="card">
+      <div class="who">
+        <span class="eyebrow">RESEARCHER</span>
+        <h2>{SITE.authorTitle}</h2>
+        <p>{SITE.authorBio}</p>
+      </div>
+      <Subscribe variant="card" id="subscribe-home" />
+    </div>
+  </section>
 </Base>

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>실험 로그 상세</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F5F0}
+a{color:#1F5E46}a:hover{color:#123D2D}
+.paper{background-color:#F3F5F0;background-image:linear-gradient(#E3E8DF 1px,transparent 1px),linear-gradient(90deg,#E3E8DF 1px,transparent 1px);background-size:24px 24px}
+</style>
+</helmet>
+<div class="paper" style="font-family: 'IBM Plex Sans KR', sans-serif; color: #17201B; min-height: 100vh">
+
+<header style="border-bottom: 1px solid #17201B; background: #F3F5F0">
+<div style="max-width: 1120px; margin: 0 auto; padding: 16px 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #17201B">
+<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#17201B" stroke-width="1.8" aria-hidden="true"><path d="M10 3h8M12 3v7L5 23a2 2 0 0 0 1.8 2.9h14.4A2 2 0 0 0 23 23l-7-13V3"/><path d="M8.5 17h11" stroke="{{accent}}"/></svg>
+<span style="font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 18px; letter-spacing: -0.02em">leave-lab</span>
+</a>
+<nav aria-label="주 메뉴" style="display: flex; flex-wrap: wrap; gap: 4px; font-size: 15px">
+<a href="Main.dc.html" style="padding: 12px; text-decoration: none; color: #17201B; font-weight: 700; border-bottom: 2px solid {{accent}}">실험 로그</a>
+<a href="Calculator.dc.html" style="padding: 12px; text-decoration: none; color: #17201B">계산기</a>
+<a href="#" style="padding: 12px; text-decoration: none; color: #17201B">소개</a>
+<a href="#" style="padding: 12px; text-decoration: none; color: #17201B; font-family: 'IBM Plex Mono', monospace; font-size: 14px">KO / ไทย</a>
+</nav>
+</div>
+</header>
+
+<main style="max-width: 1120px; margin: 0 auto; padding: 40px 20px 72px; display: flex; flex-direction: column; gap: 36px">
+<nav aria-label="현재 위치" style="font-size: 14px; color: #56635B; display: flex; gap: 8px">
+<a href="Main.dc.html">홈</a><span>/</span><a href="Main.dc.html">실험 로그</a><span>/</span><span>EXP-02</span>
+</nav>
+
+<div style="display: flex; flex-direction: column; gap: 16px; max-width: 780px">
+<div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-family: 'IBM Plex Mono', monospace; font-size: 13px">
+<span style="color: #1F5E46; letter-spacing: 0.08em">EXP-02</span>
+<span style="padding: 3px 10px; border: 1px solid #17201B; border-radius: 999px; font-family: 'IBM Plex Sans KR', sans-serif">수익</span>
+<span style="color: {{accent}}">● 측정 중</span>
+</div>
+<h1 style="margin: 0; font-size: clamp(30px, 5vw, 46px); line-height: 1.25; letter-spacing: -0.03em">육아휴직 급여 계산기를 만든 이유와 검색 유입 [N]주 차</h1>
+<div style="display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; color: #56635B">
+<span>JB</span><span>[발행일]</span><span>읽는 데 [N]분</span>
+</div>
+</div>
+
+<section aria-label="실험 요약" style="background: #FFFFFF; border: 1.5px solid #17201B; border-radius: 4px; box-shadow: 6px 6px 0 #17201B; max-width: 780px">
+<div style="padding: 14px 20px; border-bottom: 1px dashed #9AA59E; font-family: 'IBM Plex Mono', monospace; font-size: 13px; display: flex; justify-content: space-between"><span>EXPERIMENT CARD</span><span>시작 [날짜]</span></div>
+<div style="padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 6px"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #1F5E46">HYPOTHESIS</span><span style="font-size: 15px; line-height: 1.6">계산기 페이지 하나가 글보다 꾸준한 검색 유입을 만든다</span></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #1F5E46">METHOD</span><span style="font-size: 15px; line-height: 1.6">정적 페이지로 배포하고 서치콘솔로 주간 노출·클릭을 기록</span></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #1F5E46">RESULT</span><span style="font-size: 15px; line-height: 1.6">노출 [N]회 · 클릭 [N]회 · 수익 ₩[금액]</span></div>
+</div>
+</section>
+
+<div style="display: flex; flex-wrap: wrap-reverse; gap: 40px; align-items: flex-start">
+<article style="flex: 999 1 560px; min-width: 0; max-width: 780px; display: flex; flex-direction: column; gap: 20px; font-size: 17px; line-height: 1.85">
+<h2 id="why" style="margin: 16px 0 0; font-size: 26px; line-height: 1.4; letter-spacing: -0.02em">왜 계산기부터 만들었나</h2>
+<p style="margin: 0">휴직을 앞두고 급여를 직접 계산해 보려다 생각보다 헷갈렸습니다. [실제 계기 한두 문장]</p>
+<p style="margin: 0">같은 고민을 하는 사람이 많다면, 글보다 도구가 더 오래 검색될 거라고 가정했습니다.</p>
+
+<h2 id="build" style="margin: 16px 0 0; font-size: 26px; line-height: 1.4; letter-spacing: -0.02em">만든 과정</h2>
+<p style="margin: 0">Astro 정적 페이지 하나에 계산 로직만 넣었습니다. 구간별 규칙은 한곳에 모아 두고 기준이 바뀌면 숫자만 고칩니다.</p>
+<pre style="margin: 0; padding: 20px; background: #17201B; color: #E3E8DF; border-radius: 4px; overflow-x: auto; font-family: 'IBM Plex Mono', monospace; font-size: 14px; line-height: 1.7">RULES = [
+  { upTo: 3,  rate: 1.0, cap: [금액] },
+  { upTo: 6,  rate: 1.0, cap: [금액] },
+  { upTo: 12, rate: 0.8, cap: [금액] },
+]</pre>
+
+<h2 id="numbers" style="margin: 16px 0 0; font-size: 26px; line-height: 1.4; letter-spacing: -0.02em">숫자로 본 [N]주</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px">
+<div style="padding: 18px; background: #FFFFFF; border: 1.5px solid #17201B; border-radius: 4px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 13px; color: #56635B">노출</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 24px; font-weight: 600">[N]</span></div>
+<div style="padding: 18px; background: #FFFFFF; border: 1.5px solid #17201B; border-radius: 4px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 13px; color: #56635B">클릭</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 24px; font-weight: 600">[N]</span></div>
+<div style="padding: 18px; background: #FFFFFF; border: 1.5px solid #17201B; border-radius: 4px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 13px; color: #56635B">평균 순위</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 24px; font-weight: 600">[N]</span></div>
+</div>
+<p style="margin: 0">[주차별 변화와 눈에 띈 검색어 정리]</p>
+
+<h2 id="next" style="margin: 16px 0 0; font-size: 26px; line-height: 1.4; letter-spacing: -0.02em">다음 실험</h2>
+<blockquote style="margin: 0; padding: 18px 22px; background: #FFFFFF; border: 1.5px dashed #17201B; border-radius: 4px; font-size: 16px">[이번 결과로 바꿔 볼 한 가지]</blockquote>
+
+<a href="Calculator.dc.html" style="display: inline-flex; align-self: flex-start; align-items: center; min-height: 48px; padding: 0 22px; background: {{accent}}; color: #FFFFFF; text-decoration: none; font-weight: 500; border-radius: 4px; margin-top: 8px">계산기 직접 써 보기</a>
+</article>
+
+<aside aria-label="목차" style="flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 10px; padding: 20px; background: #FFFFFF; border: 1.5px solid #17201B; border-radius: 4px">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; padding-bottom: 8px; border-bottom: 1px dashed #9AA59E">CONTENTS</span>
+<a href="#why" style="padding: 8px 0; text-decoration: none; font-size: 15px">왜 계산기부터 만들었나</a>
+<a href="#build" style="padding: 8px 0; text-decoration: none; font-size: 15px">만든 과정</a>
+<a href="#numbers" style="padding: 8px 0; text-decoration: none; font-size: 15px">숫자로 본 [N]주</a>
+<a href="#next" style="padding: 8px 0; text-decoration: none; font-size: 15px">다음 실험</a>
+</aside>
+</div>
+
+<nav aria-label="이전·다음 글" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; border-top: 1.5px solid #17201B; padding-top: 24px">
+<a href="#" style="display: flex; flex-direction: column; gap: 6px; padding: 20px; background: #FFFFFF; border: 1.5px solid #17201B; border-radius: 4px; text-decoration: none; color: #17201B"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #56635B">← EXP-01</span><span style="font-size: 16px; font-weight: 500">휴직 첫 달, 하루 몇 시간을 일에 쓸 수 있었나</span></a>
+<a href="#" style="display: flex; flex-direction: column; gap: 6px; padding: 20px; background: #FFFFFF; border: 1.5px solid #17201B; border-radius: 4px; text-decoration: none; color: #17201B; text-align: right"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #56635B">EXP-03 →</span><span style="font-size: 16px; font-weight: 500">음력 달력 앱을 Flutter로 옮기면서 배운 것</span></a>
+</nav>
+
+<form onSubmit="{{noop}}" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; padding: 28px; background: #17201B; color: #F3F5F0; border-radius: 4px">
+<div style="flex: 999 1 280px; display: flex; flex-direction: column; gap: 6px">
+<label for="email2" style="font-size: 18px; font-weight: 500">다음 실험 결과를 메일로 받기</label>
+<span style="font-size: 14px; color: #B7C0BA">한 달에 한 번, 숫자와 실패담만 보냅니다</span>
+</div>
+<input id="email2" type="email" placeholder="이메일 주소" style="flex: 1 1 220px; min-height: 48px; padding: 0 14px; border: 0; border-radius: 4px; font-size: 16px; font-family: inherit; background: #F3F5F0; color: #17201B">
+<button type="submit" style="min-height: 48px; padding: 0 22px; border: 0; border-radius: 4px; background: #8FD3B1; color: #17201B; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer">구독하기</button>
+</form>
+</main>
+
+<footer style="border-top: 1px solid #17201B; background: #F3F5F0">
+<div style="max-width: 1120px; margin: 0 auto; padding: 24px 20px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 14px; color: #56635B">
+<span style="font-family: 'IBM Plex Mono', monospace">© leave-lab</span>
+<span>모든 숫자는 실제 기록이며, 투자 권유가 아닙니다.</span>
+</div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#1F5E46","options":["#1F5E46","#1D4ED8","#B45309","#7C3AED"]},"$preview":{"width":1280,"height":2300}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#1F5E46', noop: function (e) { e.preventDefault(); } };
+  }
+}
+</script>
+</body>
+</html>

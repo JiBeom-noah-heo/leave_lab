@@ -1,0 +1,17 @@
+---
+import { SITE } from '../site';
+interface Props { lang?: 'ko' | 'th' }
+const { lang = 'ko' } = Astro.props;
+---
+<footer class="site-footer">
+  <div class="container">
+    <span class="copy">© leave-lab</span>
+    <nav aria-label="바닥 메뉴">
+      <a href="/about/">{lang === 'th' ? 'เกี่ยวกับ (KO)' : '소개'}</a>
+      <a href="/privacy/">{lang === 'th' ? 'นโยบายความเป็นส่วนตัว (KO)' : '개인정보처리방침'}</a>
+      <a href="/contact/">{lang === 'th' ? 'ติดต่อ (KO)' : '문의'}</a>
+      <a href="/rss.xml">RSS</a>
+    </nav>
+    <span>{SITE.disclaimer}</span>
+  </div>
+</footer>

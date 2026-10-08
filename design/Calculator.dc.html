@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>육아휴직 급여 계산기</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F5F0}
+a{color:#1F5E46}a:hover{color:#123D2D}
+.paper{background-color:#F3F5F0;background-image:linear-gradient(#E3E8DF 1px,transparent 1px),linear-gradient(90deg,#E3E8DF 1px,transparent 1px);background-size:24px 24px}
+input[type=range]{accent-color:#1F5E46}
+</style>
+</helmet>
+<div class="paper" style="font-family: 'IBM Plex Sans KR', sans-serif; color: #17201B; min-height: 100vh">
+
+<header style="border-bottom: 1px solid #17201B; background: #F3F5F0">
+<div style="max-width: 1120px; margin: 0 auto; padding: 16px 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #17201B">
+<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#17201B" stroke-width="1.8" aria-hidden="true"><path d="M10 3h8M12 3v7L5 23a2 2 0 0 0 1.8 2.9h14.4A2 2 0 0 0 23 23l-7-13V3"/><path d="M8.5 17h11" stroke="{{accent}}"/></svg>
+<span style="font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 18px; letter-spacing: -0.02em">leave-lab</span>
+</a>
+<nav aria-label="주 메뉴" style="display: flex; flex-wrap: wrap; gap: 4px; font-size: 15px">
+<a href="Main.dc.html" style="padding: 12px; text-decoration: none; color: #17201B">실험 로그</a>
+<a href="#" style="padding: 12px; text-decoration: none; color: #17201B; font-weight: 700; border-bottom: 2px solid {{accent}}">계산기</a>
+<a href="#" style="padding: 12px; text-decoration: none; color: #17201B">소개</a>
+<a href="#" style="padding: 12px; text-decoration: none; color: #17201B; font-family: 'IBM Plex Mono', monospace; font-size: 14px">KO / ไทย</a>
+</nav>
+</div>
+</header>
+
+<main style="max-width: 1120px; margin: 0 auto; padding: 40px 20px 72px; display: flex; flex-direction: column; gap: 32px">
+<nav aria-label="현재 위치" style="font-size: 14px; color: #56635B; display: flex; gap: 8px">
+<a href="Main.dc.html">홈</a><span>/</span><a href="#">계산기</a><span>/</span><span>육아휴직 급여</span>
+</nav>
+
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.08em; color: #1F5E46">TOOL-01 · [기준 연도] 기준</span>
+<h1 style="margin: 0; font-size: clamp(32px, 5vw, 48px); line-height: 1.2; letter-spacing: -0.03em">육아휴직 급여 계산기</h1>
+<p style="margin: 0; font-size: 17px; line-height: 1.7; color: #3D4A42; max-width: 640px">월 통상임금과 휴직 기간을 넣으면 달마다 받는 금액과 총액을 바로 보여줍니다.</p>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+
+<form aria-label="입력" onSubmit="{{noop}}" style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 24px; padding: 28px; background: #FFFFFF; border: 1.5px solid #17201B; border-radius: 4px">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; padding-bottom: 12px; border-bottom: 1px dashed #9AA59E">INPUT</span>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label for="wage" style="font-size: 15px; font-weight: 500">월 통상임금 (원)</label>
+<input id="wage" type="number" inputmode="numeric" min="0" step="10000" value="{{wage}}" onChange="{{onWage}}" style="min-height: 52px; padding: 0 14px; border: 1.5px solid #17201B; border-radius: 4px; font-size: 20px; font-family: 'IBM Plex Mono', monospace; background: #F3F5F0">
+<span style="font-size: 13px; color: #56635B">세전 기본급과 고정 수당을 합한 금액</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; justify-content: space-between; align-items: baseline">
+<label for="months" style="font-size: 15px; font-weight: 500">휴직 기간</label>
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 20px; font-weight: 600">{{months}}개월</span>
+</div>
+<input id="months" type="range" min="1" max="12" step="1" value="{{months}}" onChange="{{onMonths}}" style="width: 100%; min-height: 44px">
+<div style="display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #56635B"><span>1</span><span>6</span><span>12</span></div>
+</div>
+<div style="font-size: 13px; line-height: 1.6; color: #56635B; padding: 14px; background: #F3F5F0; border-radius: 4px">구간별 지급률과 상한액은 [기준 연도] 고용노동부 기준으로 맞춰야 합니다. 실제 적용 전 고용24에서 확인하세요.</div>
+</form>
+
+<section aria-label="결과" style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px">
+<div style="padding: 24px; background: #17201B; color: #F3F5F0; border-radius: 4px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; color: #B7C0BA">총 예상 수령액</span>
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 32px; font-weight: 600">₩{{total}}</span>
+</div>
+<div style="padding: 24px; background: #FFFFFF; border: 1.5px solid #17201B; border-radius: 4px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; color: #56635B">월 평균</span>
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 32px; font-weight: 600">₩{{avg}}</span>
+</div>
+</div>
+
+<div style="background: #FFFFFF; border: 1.5px solid #17201B; border-radius: 4px; box-shadow: 6px 6px 0 #17201B">
+<div style="padding: 14px 20px; border-bottom: 1px dashed #9AA59E; font-family: 'IBM Plex Mono', monospace; font-size: 13px; display: flex; justify-content: space-between"><span>MONTHLY</span><span>단위: 원</span></div>
+<div style="padding: 8px 20px 16px; display: flex; flex-direction: column">
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+<div style="display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #E3E8DF">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #56635B; width: 44px">{{r.label}}</span>
+<div style="flex: 1 1 auto; height: 14px; background: #E3E8DF; border-radius: 2px; overflow: hidden"><div style="{{r.bar}}"></div></div>
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; width: 110px; text-align: right">{{r.amount}}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+</div>
+
+<section style="display: flex; flex-direction: column; gap: 16px; max-width: 760px">
+<h2 style="margin: 0; font-size: 24px; letter-spacing: -0.02em">계산 방식</h2>
+<div style="display: flex; flex-direction: column; border-top: 1.5px solid #17201B">
+<div style="display: flex; flex-wrap: wrap; gap: 8px 20px; padding: 16px 4px; border-bottom: 1px solid #C9D1C8"><span style="font-family: 'IBM Plex Mono', monospace; width: 96px">1–3개월</span><span>통상임금의 100%, 상한 [금액]</span></div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px 20px; padding: 16px 4px; border-bottom: 1px solid #C9D1C8"><span style="font-family: 'IBM Plex Mono', monospace; width: 96px">4–6개월</span><span>통상임금의 100%, 상한 [금액]</span></div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px 20px; padding: 16px 4px; border-bottom: 1px solid #C9D1C8"><span style="font-family: 'IBM Plex Mono', monospace; width: 96px">7개월~</span><span>통상임금의 80%, 상한 [금액]</span></div>
+</div>
+<p style="margin: 0; font-size: 14px; line-height: 1.7; color: #56635B">이 계산기는 참고용이며 실제 지급액은 고용센터 심사 결과에 따릅니다.</p>
+</section>
+
+<a href="Post.dc.html" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding: 24px 28px; background: #FFFFFF; border: 1.5px solid #17201B; border-radius: 4px; text-decoration: none; color: #17201B">
+<span style="display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #1F5E46">관련 실험 로그</span><span style="font-size: 18px; font-weight: 500">이 계산기를 만든 이유와 검색 유입 기록</span></span>
+<span style="font-weight: 500; color: #1F5E46">읽기 →</span>
+</a>
+</main>
+
+<footer style="border-top: 1px solid #17201B; background: #F3F5F0">
+<div style="max-width: 1120px; margin: 0 auto; padding: 24px 20px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 14px; color: #56635B">
+<span style="font-family: 'IBM Plex Mono', monospace">© leave-lab</span>
+<span>모든 숫자는 실제 기록이며, 투자 권유가 아닙니다.</span>
+</div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#1F5E46","options":["#1F5E46","#1D4ED8","#B45309","#7C3AED"]},"$preview":{"width":1280,"height":1900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { wage: 3000000, months: 12 }; }
+  renderVals() {
+    var self = this;
+    var accent = this.props.accent ?? '#1F5E46';
+    // 예시 규칙: 실제 기준 연도 값으로 교체할 것
+    var RULES = [
+      { upTo: 3, rate: 1.0, cap: 2500000 },
+      { upTo: 6, rate: 1.0, cap: 2000000 },
+      { upTo: 12, rate: 0.8, cap: 1600000 }
+    ];
+    var FLOOR = 700000;
+    var wage = Number(this.state.wage) || 0;
+    var n = this.state.months;
+    var amounts = [];
+    for (var m = 1; m <= n; m++) {
+      var r = RULES.find(function (x) { return m <= x.upTo; });
+      amounts.push(wage > 0 ? Math.max(FLOOR, Math.min(wage * r.rate, r.cap)) : 0);
+    }
+    var max = Math.max.apply(null, amounts.concat([1]));
+    var fmt = function (v) { return Math.round(v).toLocaleString('ko-KR'); };
+    var total = amounts.reduce(function (a, b) { return a + b; }, 0);
+    return {
+      accent: accent,
+      wage: this.state.wage,
+      months: n,
+      total: fmt(total),
+      avg: fmt(n ? total / n : 0),
+      rows: amounts.map(function (v, i) {
+        return { label: (i + 1) + '월', amount: fmt(v), bar: 'height: 100%; width: ' + Math.round(v / max * 100) + '%; background: ' + accent };
+      }),
+      onWage: function (e) { self.setState({ wage: e.target.value }); },
+      onMonths: function (e) { self.setState({ months: Number(e.target.value) }); },
+      noop: function (e) { e.preventDefault(); }
+    };
+  }
+}
+</script>
+</body>
+</html>

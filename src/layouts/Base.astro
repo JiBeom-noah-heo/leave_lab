@@ -1,53 +1,30 @@
 ---
 import '../styles/global.css';
 import { SITE } from '../site';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 interface Props { title: string; description: string; lang?: 'ko' | 'th'; }
 const { title, description, lang = 'ko' } = Astro.props;
 const ads = import.meta.env.PUBLIC_ADSENSE_CLIENT;
-const home = lang === 'th' ? '/th/' : '/';
-const nav = lang === 'th'
-  ? [['/th/', 'บันทึก'], ['/tools/', 'เครื่องมือ'], ['/', 'KO']]
-  : [['/', '기록'], ['/tools/', '도구'], ['/about/', '소개'], ['/th/', 'TH']];
-const path = Astro.url.pathname;
-const isCurrent = (href: string) => {
-  if (href === '/') return lang === 'ko' && (path === '/' || path.startsWith('/log/'));
-  if (href === '/th/') return lang === 'th' && (path === '/th/' || path.startsWith('/th/log/'));
-  return path.startsWith(href);
-};
 ---
 <!doctype html>
 <html lang={lang}>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#f6f5f1" />
+  <meta name="theme-color" content="#F3F5F0" />
   <title>{title}</title>
   <meta name="description" content={description} />
   {SITE.naverVerification && <meta name="naver-site-verification" content={SITE.naverVerification} />}
   <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
   <link rel="alternate" type="application/rss+xml" href="/rss.xml" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono&family=Noto+Sans+Thai:wght@400;500;600&display=swap" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+Thai:wght@400;500;700&display=swap" />
   {ads && <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ads}`} crossorigin="anonymous"></script>}
 </head>
 <body>
-  <div class="wrap">
-    <header class="site">
-      <a class="brand" href={home}>
-        <span class="mark" aria-hidden="true">L</span>
-        <span><b>{lang === 'th' ? 'บันทึกทดลองของนักพัฒนาลาเลี้ยงลูก' : SITE.name}</b><small>{lang === 'th' ? 'บันทึกเฉพาะผลลัพธ์และคำตัดสิน' : '결과와 판정만 기록합니다'}</small></span>
-      </a>
-      <nav>{nav.map(([href, label]) => <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>{label}</a>)}</nav>
-    </header>
-    <slot />
-    <footer class="site">
-      <nav>
-        <a href="/about/">{lang === 'th' ? 'เกี่ยวกับ (KO)' : '소개'}</a>
-        <a href="/privacy/">{lang === 'th' ? 'นโยบายความเป็นส่วนตัว (KO)' : '개인정보처리방침'}</a>
-        <a href="/contact/">{lang === 'th' ? 'ติดต่อ (KO)' : '문의'}</a>
-        <a href="/rss.xml">RSS</a>
-      </nav>
-      <p>© 2026 leave-lab</p>
-    </footer>
-  </div>
+  <SiteHeader lang={lang} />
+  <slot />
+  <SiteFooter lang={lang} />
 </body>
 </html>

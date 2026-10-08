@@ -2,12 +2,21 @@
 import Base from '../../layouts/Base.astro';
 import registry from '../../../public/tools/_registry.json';
 ---
-<Base title="셀러·육아휴직 계산기" description="위탁판매 가격 판정기, 스마트스토어 순이익·목표 판매가, 손익분기 ROAS, 쇼피 마진, 육아휴직 부업 판정기. 실제 실험에서 쓰던 계산을 옮겼고 기준일과 근거를 함께 표시합니다.">
-  <section class="hero">
-    <h1>계산기</h1>
-    <p class="lead">실험하면서 실제로 쓰던 계산을 그대로 옮겼습니다. 입력값은 브라우저 안에서만 계산되고, 모든 도구는 기준일과 근거 링크를 하단에 표시합니다.</p>
-  </section>
-  <div class="tools">
-    {registry.map(t => <a href={`/tools/${t.file}`}><b>{t.name}</b><small>{t.summary}</small><span class="asof">기준일 {t.asOf}</span></a>)}
-  </div>
+<Base title="계산기 — leave-lab" description="육아휴직 급여 계산기, 위탁판매 가격 판정기, 스마트스토어 순이익·목표 판매가, 손익분기 ROAS, 쇼피 마진, 육아휴직 부업 판정기. 실제 실험에서 쓰던 계산을 옮겼고 기준일과 근거를 함께 표시합니다.">
+  <main class="container page">
+    <div class="page-head">
+      <span class="eyebrow">TOOLS</span>
+      <h1>직접 만든 계산기</h1>
+      <p class="lead">실험하면서 실제로 쓰던 계산을 그대로 옮겼습니다. 입력값은 브라우저 안에서만 계산되고, 모든 도구는 기준일과 근거 링크를 하단에 표시합니다.</p>
+    </div>
+    <div class="tools-grid">
+      {registry.map(t => (
+        <a class="card tool-card" href={`/tools/${t.file}`}>
+          <span class="name">{t.name}</span>
+          <span class="desc">{t.summary}</span>
+          <span class="asof">기준일 {t.asOf}</span>
+        </a>
+      ))}
+    </div>
+  </main>
 </Base>

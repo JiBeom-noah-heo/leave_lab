@@ -1,0 +1,9 @@
+---
+// 소개·개인정보처리방침·문의·404처럼 본문만 있는 페이지용. 글 상세와 같은 본문 폭(780px)을 쓴다.
+import Base from './Base.astro';
+interface Props { title: string; description: string; lang?: 'ko' | 'th'; }
+const { title, description, lang = 'ko' } = Astro.props;
+---
+<Base title={title} description={description} lang={lang}>
+  <main class="container page"><div class="prose"><slot /></div></main>
+</Base>

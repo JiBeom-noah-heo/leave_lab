@@ -1,0 +1,24 @@
+---
+interface Props { lang?: 'ko' | 'th' }
+const { lang = 'ko' } = Astro.props;
+const path = Astro.url.pathname;
+const items: [string, string][] = lang === 'th'
+  ? [['/th/', 'บันทึก'], ['/tools/', 'เครื่องมือ'], ['/about/', 'เกี่ยวกับ']]
+  : [['/log/', '실험 로그'], ['/tools/', '계산기'], ['/about/', '소개']];
+const isCurrent = (href: string) => path.startsWith(href);
+---
+<header class="site-header">
+  <div class="container">
+    <a class="logo" href={lang === 'th' ? '/th/' : '/'} aria-label="leave-lab 홈">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <path d="M10 3h8M12 3v7L5 23a2 2 0 0 0 1.8 2.9h14.4A2 2 0 0 0 23 23l-7-13V3"/>
+        <path class="flask-line" d="M8.5 17h11"/>
+      </svg>
+      <span>leave-lab</span>
+    </a>
+    <nav class="site-nav" aria-label="주 메뉴">
+      {items.map(([href, label]) => <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>{label}</a>)}
+      <a class="lang" href={lang === 'th' ? '/' : '/th/'}>KO / ไทย</a>
+    </nav>
+  </div>
+</header>
