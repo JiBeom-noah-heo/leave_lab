@@ -5,7 +5,7 @@ import { render } from 'astro:content';
 import Base from './Base.astro';
 import Subscribe from '../components/Subscribe.astro';
 import { SITE } from '../site';
-import { ymd, readingMinutes, statusOf } from '../ui';
+import { ymd, readingMinutes, statusOf, categoryOf } from '../ui';
 
 export interface Brief { slug: string; title: string; label: string }
 interface Props { p: CollectionEntry<'log'>; prev: Brief | null; next: Brief | null; lang?: 'ko' | 'th' }
@@ -32,7 +32,7 @@ const t = th
     <div class="post-head">
       <div class="labels">
         {d.expId && <span class="id">{d.expId}</span>}
-        <span class="pill">{d.category ?? d.series}</span>
+        <span class="pill">{categoryOf(d) ?? d.series}</span>
         {s.label && <span class={`status ${s.cls}`}>● {s.label}</span>}
       </div>
       <h1>{d.title}</h1>

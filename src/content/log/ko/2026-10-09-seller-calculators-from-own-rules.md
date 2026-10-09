@@ -4,6 +4,7 @@ description: "위탁판매 자동화의 가격 규칙을 옮긴 판정기와 순
 date: 2026-10-09
 lang: ko
 series: 실험로그
+category: 개발
 tags: ["계산기", "위탁판매", "스마트스토어", "광고", "수수료"]
 sources:
   - { title: "스마트스토어 고객센터: 수수료의 종류", url: "https://help.sell.smartstore.naver.com/faq/content.help?faqId=3558" }

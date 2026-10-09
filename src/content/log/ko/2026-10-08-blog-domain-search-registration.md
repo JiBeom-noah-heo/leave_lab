@@ -4,6 +4,7 @@ description: "자동 발행 블로그에 도메인을 연결하고 구글 서치
 date: 2026-10-08
 lang: ko
 series: 실험로그
+category: 수익
 tags: ["블로그", "도메인", "서치콘솔", "네이버서치어드바이저", "애드센스"]
 sources: []
 draft: false

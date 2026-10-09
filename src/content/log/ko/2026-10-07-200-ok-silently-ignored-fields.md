@@ -4,6 +4,7 @@ description: "네이버 커머스API에 필드를 잘못된 위치에 넣었는�
 date: 2026-10-07
 lang: ko
 series: 실험로그
+category: 개발
 tags: ["API", "스마트스토어", "검증"]
 sources: []
 draft: false

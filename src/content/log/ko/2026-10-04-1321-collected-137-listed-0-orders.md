@@ -4,6 +4,7 @@ description: "위탁판매 자동화 파이프라인의 9월 11일 결산과 9�
 date: 2026-10-04
 lang: ko
 series: 실험로그
+category: 수익
 tags: ["위탁판매", "스마트스토어", "자동화", "결산"]
 sources: []
 draft: false

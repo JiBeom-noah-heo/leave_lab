@@ -4,6 +4,7 @@ description: "주제를 먼저 정하던 기존 블로그 봇을 정적 사이�
 date: 2026-09-30
 lang: ko
 series: 실험로그
+category: 자동화
 tags: ["자동화", "블로그", "정적사이트", "클로드코드"]
 sources: []
 draft: false

@@ -1,18 +1,18 @@
 ---
 // 글 목록 한 줄 = 번호(expId 또는 날짜) · 제목 · 분류 · 상태. CategoryTabs가 data-cat으로 거른다.
 import type { CollectionEntry } from 'astro:content';
-import { ymd, statusOf } from '../ui';
+import { ymd, statusOf, categoryOf } from '../ui';
 interface Props { posts: CollectionEntry<'log'>[]; lang?: 'ko' | 'th'; id?: string }
 const { posts, lang = 'ko', id } = Astro.props;
 const base = lang === 'th' ? '/th/log/' : '/log/';
 const slug = (s: string) => s.replace(/^(ko|th)\//, '');
 ---
 <div class="log-list" id={id}>
-  {posts.map(p => { const s = statusOf(p.data); return (
-    <a class="log-row" href={`${base}${slug(p.id)}/`} data-cat={p.data.category ?? ''}>
+  {posts.map(p => { const s = statusOf(p.data); const cat = categoryOf(p.data); return (
+    <a class="log-row" href={`${base}${slug(p.id)}/`} data-cat={cat ?? ''}>
       <span class="no">{p.data.expId ?? ymd(p.data.date)}</span>
       <span class="title">{p.data.title}</span>
-      <span class="pill">{p.data.category ?? p.data.series}</span>
+      <span class="pill">{cat ?? p.data.series}</span>
       {s.label && <span class={`status ${s.cls}`}>{s.label}</span>}
     </a>
   ); })}

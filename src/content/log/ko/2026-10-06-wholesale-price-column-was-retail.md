@@ -4,6 +4,7 @@ description: "위탁판매 자동화에서 도매꾹 엑셀의 '판매가'를 �
 date: 2026-10-06
 lang: ko
 series: 실험로그
+category: 수익
 tags: ["위탁판매", "가격", "데이터검증"]
 sources: []
 draft: false

@@ -4,6 +4,7 @@ description: "위탁판매 구조로 태국 쇼피에 K뷰티를 올릴 수 있�
 date: 2026-09-28
 lang: ko
 series: 검증일지
+category: 수익
 verdict: NO-GO
 tags: [쇼피, 태국, 규제, 화장품, 위탁판매]
 sources:

@@ -4,6 +4,7 @@ description: "작업 메모를 블로그 글로 바꿔 자동 발행하는 흐�
 date: 2026-10-03
 lang: ko
 series: 실험로그
+category: 자동화
 tags: ["자동화", "블로그", "사실검증", "클로드코드"]
 sources: []
 draft: false
