@@ -55,10 +55,10 @@ const t = th
     <div class="post-cols">
       <article class="prose log"><Content /></article>
       {toc.length > 0 && (
-        <aside class="card toc" aria-label="목차">
-          <span class="k">{t.contents}</span>
+        <details class="card toc" aria-label="목차" open>
+          <summary class="k"><span>{t.contents}</span><span class="chev" aria-hidden="true">▾</span></summary>
           {toc.map(h => <a href={`#${h.slug}`}>{h.text}</a>)}
-        </aside>
+        </details>
       )}
     </div>
 
@@ -82,3 +82,8 @@ const t = th
     <Subscribe variant="band" id="subscribe-post" />
   </main>
 </Base>
+<script>
+  // 좁은 화면(목차가 본문 위로 올라오는 폭)에서는 목차를 접어 둔다. 데스크톱에서는 펼친 채 옆에 고정.
+  const toc = document.querySelector<HTMLDetailsElement>('details.toc');
+  if (toc && matchMedia('(max-width: 900px)').matches) toc.open = false;
+</script>

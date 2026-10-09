@@ -29,7 +29,7 @@ const others = registry.filter(t => t !== featured);
     <aside class="card lift lab-status" aria-label="실험 현황">
       <div class="card-head"><span>LAB STATUS</span><span style="color:var(--accent)">● 진행 중</span></div>
       <div class="grid">
-        <div class="stat"><small>휴직</small><b class={dPlus === null ? 'todo' : ''}>D+{dPlus ?? '[N]'}</b></div>
+        <div class="stat"><small>휴직</small><b class={dPlus === null ? 'todo' : ''} data-dplus={SITE.leaveStart || undefined}>D+{dPlus ?? '[N]'}</b></div>
         <div class="stat"><small>진행 중 실험</small><b>{active}개</b></div>
         <div class="stat"><small>이번 달 수익</small><b class={SITE.monthlyRevenue === null ? 'todo' : ''}>₩{SITE.monthlyRevenue === null ? '[금액]' : SITE.monthlyRevenue.toLocaleString('ko-KR')}</b></div>
         <div class="stat"><small>발행 글</small><b>{posts.length}편</b></div>
@@ -82,3 +82,9 @@ const others = registry.filter(t => t !== featured);
     </div>
   </section>
 </Base>
+<script>
+  // 휴직 D+N은 빌드 시점이 아니라 보는 시점 기준으로 센다. 글이 없어 재배포가 없는 날에도 맞는 숫자가 보인다.
+  const el = document.querySelector<HTMLElement>('[data-dplus]');
+  const start = el?.dataset.dplus ? Date.parse(el.dataset.dplus) : NaN;
+  if (el && !Number.isNaN(start)) el.textContent = `D+${Math.floor((Date.now() - start) / 86_400_000)}`;
+</script>

@@ -15,7 +15,7 @@ export const SITE = {
   disclaimer: '모든 숫자는 실제 기록이며, 투자 권유가 아닙니다.',
 
   // 홈 LAB STATUS 카드. 비어 있으면 자리표시([N], [금액])가 그대로 보인다.
-  leaveStart: '' as string,            // 휴직 시작일 'YYYY-MM-DD' → D+N 계산
-  monthlyRevenue: null as number | null, // 이번 달 수익(원)
+  leaveStart: '2025-03-09' as string,  // 휴직 시작일. 2026-10-09 기준 19개월 전으로 넣었다. 정확한 날짜로 고치면 D+N이 바뀐다
+  monthlyRevenue: 0 as number | null,    // 이번 달 수익(원). 수익이 생기면 여기 숫자를 고친다
   statusFootnote: '매월 1일 수익 리포트 공개',
 };
