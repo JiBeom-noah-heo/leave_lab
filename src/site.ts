@@ -9,8 +9,8 @@ export const SITE = {
   naverVerification: '9347967767474a73ebd2f3aaece1f41ea9d9a3ec',
 
   // 글쓴이 표시 (글 상세 바이라인, 홈 RESEARCHER 카드). 시안 문구를 그대로 옮겼다.
-  author: 'JB',
-  authorTitle: 'JB · 프론트엔드 개발자, 두 아이 아빠',
+  author: '',  // 글쓴이 이름. 비워 두면 글 상단 바이라인에 이름 칸이 생기지 않는다
+  authorTitle: '프론트엔드 개발자, 두 아이 아빠',
   authorBio: '산업공학을 전공하고 6년 넘게 웹을 만들었습니다. 휴직 동안 회사 밖에서 혼자 돈을 벌 수 있는지 실험하고, 그 과정을 한국어와 태국어로 남깁니다.',
   disclaimer: '모든 숫자는 실제 기록이며, 투자 권유가 아닙니다.',
 

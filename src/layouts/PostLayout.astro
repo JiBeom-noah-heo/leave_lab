@@ -37,7 +37,7 @@ const t = th
       </div>
       <h1>{d.title}</h1>
       <div class="byline">
-        <span>{SITE.author}</span><span>{ymd(d.date)}</span><span>{t.read(readingMinutes(p.body ?? ''))}</span>
+        {SITE.author && <span>{SITE.author}</span>}<span>{ymd(d.date)}</span><span>{t.read(readingMinutes(p.body ?? ''))}</span>
       </div>
     </div>
 
