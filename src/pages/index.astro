@@ -10,7 +10,7 @@ import { SITE } from '../site';
 const posts = (await getCollection('log', p => p.data.lang === 'ko' && !p.data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const latest = posts.slice(0, 5);
-const active = posts.filter(p => p.data.status && p.data.status !== '완료').length;
+const running = SITE.activeExperiments;
 const dPlus = SITE.leaveStart ? Math.floor((Date.now() - new Date(SITE.leaveStart).getTime()) / 86_400_000) : null;
 const featured = registry.find(t => 'featured' in t && t.featured) ?? registry[0];
 const others = registry.filter(t => t !== featured);
@@ -30,10 +30,11 @@ const others = registry.filter(t => t !== featured);
       <div class="card-head"><span>LAB STATUS</span><span style="color:var(--accent)">● 진행 중</span></div>
       <div class="grid">
         <div class="stat"><small>휴직</small><b class={dPlus === null ? 'todo' : ''} data-dplus={SITE.leaveStart || undefined}>D+{dPlus ?? '[N]'}</b></div>
-        <div class="stat"><small>진행 중 실험</small><b>{active}개</b></div>
+        <div class="stat"><small>진행 중 실험</small><b>{running.length}개</b></div>
         <div class="stat"><small>이번 달 수익</small><b class={SITE.monthlyRevenue === null ? 'todo' : ''}>₩{SITE.monthlyRevenue === null ? '[금액]' : SITE.monthlyRevenue.toLocaleString('ko-KR')}</b></div>
         <div class="stat"><small>발행 글</small><b>{posts.length}편</b></div>
       </div>
+      {running.length > 0 && <div class="running" aria-label="진행 중인 실험">{running.map(name => <span class="pill">{name}</span>)}</div>}
       <div class="card-foot">{SITE.statusFootnote}</div>
     </aside>
   </section>
@@ -78,7 +79,7 @@ const others = registry.filter(t => t !== featured);
         <h2>{SITE.authorTitle}</h2>
         <p>{SITE.authorBio}</p>
       </div>
-      <Subscribe variant="card" id="subscribe-home" />
+      <Subscribe variant="card" />
     </div>
   </section>
 </Base>

@@ -118,19 +118,16 @@ a{color:var(--accent)}a:hover{color:var(--accent-dark)}
 .about .who{flex:999 1 420px;min-width:0;display:flex;flex-direction:column;gap:12px}
 .about h2{margin:0;font-size:26px;letter-spacing:-.02em}
 .about p{margin:0;font-size:16px;line-height:1.7;color:var(--ink-2)}
-.subscribe{flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:10px}
-.subscribe label{font-size:15px;font-weight:500}
-.subscribe input{width:100%;min-width:0;min-height:48px;padding:0 14px;border:1.5px solid var(--ink);border-radius:4px;font-size:16px;font-family:inherit;background:var(--bg);color:var(--ink)}
-.subscribe .btn{width:100%}
-.subscribe .note,.subscribe-band .note{margin:0;font-size:13px;color:var(--muted);min-height:1.2em}
-.subscribe-band{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;padding:28px;background:var(--ink);color:var(--bg);border-radius:4px}
-.subscribe-band .text{flex:999 1 280px;display:flex;flex-direction:column;gap:6px}
-.subscribe-band label{font-size:18px;font-weight:500}
+.subscribe{flex:1 1 280px;min-width:0;display:flex;flex-direction:column;gap:10px;justify-content:center}
+.subscribe strong{font-size:17px;font-weight:500}
+.subscribe .sub{font-size:14px;color:var(--muted);line-height:1.6}
+.subscribe .btn{align-self:flex-start;margin-top:4px}
+.subscribe-band{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:center;justify-content:space-between;padding:28px;background:var(--ink);color:var(--bg);border-radius:4px}
+.subscribe-band .text{flex:1 1 280px;min-width:0;display:flex;flex-direction:column;gap:6px}
+.subscribe-band strong{font-size:18px;font-weight:500}
 .subscribe-band .sub{font-size:14px;color:var(--mint-muted)}
-.subscribe-band input{flex:1 1 220px;min-width:0;max-width:100%;min-height:48px;padding:0 14px;border:0;border-radius:4px;font-size:16px;font-family:inherit;background:var(--bg);color:var(--ink)}
-.subscribe-band .note{flex-basis:100%;color:var(--mint-muted)}
-/* 좁은 화면: 입력창·버튼을 한 줄씩 꽉 채운다. (한글 글꼴에서 input의 기본 폭이 커서 상자 밖으로 삐져나오던 문제) */
-@media(max-width:600px){.subscribe-band{padding:22px 18px}.subscribe-band input,.subscribe-band .btn{flex:1 1 100%}}
+.subscribe-band .btn{flex:0 0 auto}
+@media(max-width:600px){.subscribe-band{padding:22px 18px}.subscribe-band .btn{flex:1 1 100%;text-align:center}}
 
 /* 글 상세 */
 .post-main{padding-top:40px;padding-bottom:72px;display:flex;flex-direction:column;gap:36px}
@@ -251,3 +248,7 @@ a{color:var(--accent)}a:hover{color:var(--accent-dark)}
 
 /* 소개 페이지 삽화 (design/logo.png) */
 .about-logo{display:block;width:min(100%,300px);height:auto;margin:0 auto 28px}
+
+/* 홈 LAB STATUS: 진행 중인 실험 이름 */
+.lab-status .running{display:flex;flex-wrap:wrap;gap:6px;padding:0 20px 16px}
+.lab-status .running .pill{font-size:12px}

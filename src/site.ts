@@ -18,4 +18,6 @@ export const SITE = {
   leaveStart: '2025-03-09' as string,  // 휴직 시작일. 2026-10-09 기준 19개월 전으로 넣었다. 정확한 날짜로 고치면 D+N이 바뀐다
   monthlyRevenue: 0 as number | null,    // 이번 달 수익(원). 수익이 생기면 여기 숫자를 고친다
   statusFootnote: '매월 1일 수익 리포트 공개',
+  // 지금 진행 중인 실험. 홈 LAB STATUS의 '진행 중 실험' 개수와 목록이 여기서 나온다. 끝나면 지우고, 새로 시작하면 추가한다.
+  activeExperiments: ['랜딩페이지 판매', '위탁판매', '블로그 애드센스', '앱 개발'],
 };
