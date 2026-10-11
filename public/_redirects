@@ -1,0 +1,5 @@
+# Cloudflare Pages 리다이렉트 규칙
+# 흔히 쓰는 사이트맵 주소를 Astro가 만드는 색인 파일로 보낸다
+/sitemap.xml /sitemap-index.xml 301
+# www는 본 주소로 (중복 색인 방지)
+https://www.leave-lab.com/* https://leave-lab.com/:splat 301

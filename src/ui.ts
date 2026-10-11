@@ -31,3 +31,28 @@ export function categoryOf(d: CatMeta): Category | null {
   for (const [cat, words] of CATEGORY_HINTS) if (words.some(w => hay.includes(w.toLowerCase()))) return cat;
   return null;
 }
+
+// ---- 관련 계산기 ----
+import registry from '../public/tools/_registry.json';
+export type Tool = { file: string; name: string; summary: string; asOf: string };
+// 글의 태그·제목에 이 낱말이 있으면 해당 계산기를 글 하단에 붙인다. 앞 항목이 우선.
+const TOOL_HINTS: [string, string[]][] = [
+  ['consign-profit', ['위탁판매', '스마트스토어', '수수료', '순이익', '마진', '결산', '주문']],
+  ['consign-price-check', ['위탁판매', '도매', '가격', '등록']],
+  ['breakeven-roas', ['광고', 'roas', 'cpc', '전환', '클릭']],
+  ['shopee-margin', ['쇼피', '태국', '대만', '베트남', '크로스보더']],
+  ['leave-pay/', ['육아휴직', '휴직', '급여']],
+  ['leave-side-income', ['육아휴직', '휴직', '부업', '소득', '사업자']],
+];
+/** 글과 어울리는 계산기. 태그·제목의 낱말로 고르고 최대 max개. */
+export function relatedTools(d: CatMeta, max = 2): Tool[] {
+  const hay = [...(d.tags ?? []), d.title ?? ''].join(' ').toLowerCase();
+  const picked: Tool[] = [];
+  for (const [file, words] of TOOL_HINTS) {
+    if (picked.length >= max) break;
+    if (!words.some(w => hay.includes(w.toLowerCase()))) continue;
+    const tool = (registry as Tool[]).find(t => t.file === file);
+    if (tool && !picked.includes(tool)) picked.push(tool);
+  }
+  return picked;
+}

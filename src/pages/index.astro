@@ -14,8 +14,13 @@ const running = SITE.activeExperiments;
 const dPlus = SITE.leaveStart ? Math.floor((Date.now() - new Date(SITE.leaveStart).getTime()) / 86_400_000) : null;
 const featured = registry.find(t => 'featured' in t && t.featured) ?? registry[0];
 const others = registry.filter(t => t !== featured);
+const schema = {
+  '@context': 'https://schema.org', '@type': 'WebSite',
+  name: 'leave-lab', alternateName: SITE.name, url: 'https://leave-lab.com/', inLanguage: 'ko',
+  description: '육아휴직 1년 동안 시도하는 작은 수익화 실험들을 숫자와 함께 기록하는 블로그. 실험 로그와 직접 만든 계산기.',
+};
 ---
-<Base title="육아휴직 개발자의 수익화 실험실 — leave-lab" description="육아휴직 1년 동안 시도하는 작은 수익화 실험들. 가설, 과정, 숫자, 실패까지 그대로 기록합니다. 실험 로그와 직접 만든 계산기.">
+<Base title="육아휴직 개발자의 수익화 실험실 — leave-lab" description="육아휴직 1년 동안 시도하는 작은 수익화 실험들. 가설, 과정, 숫자, 실패까지 그대로 기록합니다. 실험 로그와 직접 만든 계산기." schema={schema}>
   <section class="container hero">
     <div class="hero-text">
       <span class="eyebrow">EXPERIMENT LOG · 2026–</span>

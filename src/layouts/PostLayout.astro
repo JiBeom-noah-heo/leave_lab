@@ -1,11 +1,11 @@
 ---
 // 글 상세 공통 레이아웃 (design/Post.dc.html). ko/th 글 페이지가 함께 쓴다.
 import type { CollectionEntry } from 'astro:content';
-import { render } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import Base from './Base.astro';
 import Subscribe from '../components/Subscribe.astro';
 import { SITE } from '../site';
-import { ymd, readingMinutes, statusOf, categoryOf } from '../ui';
+import { ymd, readingMinutes, statusOf, categoryOf, relatedTools } from '../ui';
 
 export interface Brief { slug: string; title: string; label: string }
 interface Props { p: CollectionEntry<'log'>; prev: Brief | null; next: Brief | null; lang?: 'ko' | 'th' }
@@ -14,16 +14,52 @@ const { Content, headings } = await render(p);
 const d = p.data;
 const th = lang === 'th';
 const base = th ? '/th/log/' : '/log/';
+const slugOf = (id: string) => id.replace(/^(ko|th)\//, '');
 const toc = headings.filter(h => h.depth === 2);
 const label = d.expId ?? d.series;
 const s = statusOf(d);
+const cat = categoryOf(d);
 const hasCard = Boolean(d.hypothesis || d.method || d.result);
 const ads = import.meta.env.PUBLIC_ADSENSE_CLIENT;
+const siteUrl = Astro.site?.href ?? 'https://leave-lab.com/';
+const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
+
+// 관련 글: 태그가 겹치는 같은 언어의 글. 겹친 태그 수로 고르고, 분류가 같으면 조금 더 앞에 둔다.
+const myTags = new Set(d.tags.map(t => t.toLowerCase()));
+const related = (await getCollection('log', q => q.data.lang === lang && !q.data.draft && q.id !== p.id))
+  .map(q => ({ q, score: q.data.tags.filter(t => myTags.has(t.toLowerCase())).length + (cat && categoryOf(q.data) === cat ? 0.5 : 0) }))
+  .filter(x => x.score >= 1)
+  .sort((a, b) => b.score - a.score || b.q.data.date.valueOf() - a.q.data.date.valueOf())
+  .slice(0, 3);
+const tools = relatedTools(d);
+
 const t = th
-  ? { home: 'หน้าแรก', logs: 'บันทึก', read: (m: number) => `อ่าน ${m} นาที`, started: 'เริ่ม', published: 'เผยแพร่', contents: 'CONTENTS', sources: 'SOURCES', prev: '←', next: '→' }
-  : { home: '홈', logs: '실험 로그', read: (m: number) => `읽는 데 ${m}분`, started: '시작', published: '발행', contents: 'CONTENTS', sources: 'SOURCES', prev: '←', next: '→' };
+  ? { home: 'หน้าแรก', logs: 'บันทึก', read: (m: number) => `อ่าน ${m} นาที`, started: 'เริ่ม', published: 'เผยแพร่', contents: 'CONTENTS', sources: 'SOURCES', related: 'RELATED', tool: 'เครื่องมือ', asOf: 'ข้อมูล ณ', prev: '←', next: '→' }
+  : { home: '홈', logs: '실험 로그', read: (m: number) => `읽는 데 ${m}분`, started: '시작', published: '발행', contents: 'CONTENTS', sources: 'SOURCES', related: 'RELATED', tool: '계산기', asOf: '기준일', prev: '←', next: '→' };
+
+// 구조화 데이터: 글(BlogPosting)과 현재 위치(BreadcrumbList)
+const org = { '@type': 'Organization', name: 'leave-lab', url: siteUrl };
+const schema = [
+  {
+    '@context': 'https://schema.org', '@type': 'BlogPosting',
+    headline: d.title, description: d.description, url: pageUrl, mainEntityOfPage: pageUrl,
+    datePublished: ymd(d.date), dateModified: ymd(d.date), inLanguage: lang,
+    keywords: d.tags.join(', '), articleSection: cat ?? d.series,
+    image: new URL('/img/2026/og-default.png', siteUrl).href,
+    author: org,
+    publisher: { ...org, logo: { '@type': 'ImageObject', url: new URL('/icon-512.png', siteUrl).href } },
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: t.home, item: new URL(th ? '/th/' : '/', siteUrl).href },
+      { '@type': 'ListItem', position: 2, name: t.logs, item: new URL(th ? '/th/' : '/log/', siteUrl).href },
+      { '@type': 'ListItem', position: 3, name: d.title, item: pageUrl },
+    ],
+  },
+];
 ---
-<Base title={d.title} description={d.description} lang={lang}>
+<Base title={d.title} description={d.description} lang={lang} type="article" published={d.date} schema={schema}>
   <main class="container post-main">
     <nav class="crumbs" aria-label="현재 위치">
       <a href={th ? '/th/' : '/'}>{t.home}</a><span>/</span><a href={th ? '/th/' : '/log/'}>{t.logs}</a><span>/</span><span>{label}</span>
@@ -32,7 +68,7 @@ const t = th
     <div class="post-head">
       <div class="labels">
         {d.expId && <span class="id">{d.expId}</span>}
-        <span class="pill">{categoryOf(d) ?? d.series}</span>
+        <span class="pill">{cat ?? d.series}</span>
         {s.label && <span class={`status ${s.cls}`}>● {s.label}</span>}
       </div>
       <h1>{d.title}</h1>
@@ -69,6 +105,26 @@ const t = th
       <section class="card sources" aria-label="출처">
         <div class="card-head"><span>{t.sources}</span><span>{d.sources.length}</span></div>
         <ul>{d.sources.map(src => <li><a href={src.url} rel="nofollow noopener" target="_blank">{src.title}</a></li>)}</ul>
+      </section>
+    )}
+
+    {(related.length > 0 || tools.length > 0) && (
+      <section class="related-wrap" aria-label="관련 글과 계산기">
+        <span class="eyebrow">{t.related}</span>
+        <div class="related-grid">
+          {related.map(({ q }) => (
+            <a class="card rel" href={`${base}${slugOf(q.id)}/`}>
+              <span class="k">{ymd(q.data.date)} · {categoryOf(q.data) ?? q.data.series}</span>
+              <span class="t">{q.data.title}</span>
+            </a>
+          ))}
+          {tools.map(tool => (
+            <a class="card rel tool" href={`/tools/${tool.file}`}>
+              <span class="k">{t.tool} · {t.asOf} {tool.asOf}</span>
+              <span class="t">{tool.name}</span>
+            </a>
+          ))}
+        </div>
       </section>
     )}
 

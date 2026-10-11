@@ -5,7 +5,7 @@ import { getCollection } from 'astro:content';
 const posts = (await getCollection('log', p => p.data.lang === 'th' && !p.data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
-<Base lang="th" title="บันทึกทดลองของนักพัฒนาลาเลี้ยงลูก" description="นักพัฒนาชาวเกาหลีที่ลาเลี้ยงลูก 1 ปี ทดลองสร้างรายได้ด้วย Claude Code และบันทึกผลจริง — สำหรับผู้ขาย Shopee และคนที่อยากทำระบบอัตโนมัติ">
+<Base lang="th" noindex={posts.length === 0} title="บันทึกทดลองของนักพัฒนาลาเลี้ยงลูก" description="นักพัฒนาชาวเกาหลีที่ลาเลี้ยงลูก 1 ปี ทดลองสร้างรายได้ด้วย Claude Code และบันทึกผลจริง — สำหรับผู้ขาย Shopee และคนที่อยากทำระบบอัตโนมัติ">
   <main class="container page">
     <div class="page-head">
       <span class="eyebrow">EXPERIMENT LOG · TH</span>

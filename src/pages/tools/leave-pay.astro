@@ -1,33 +1,66 @@
 ---
-// 육아휴직 급여 계산기 (design/Calculator.dc.html). 계산 규칙은 src/lib/leavePay.ts에 있다.
+// 육아휴직 급여 계산기 (design/Calculator.dc.html). 계산 규칙과 출처는 src/lib/leavePay.ts에 있다.
 import Base from '../../layouts/Base.astro';
-import { RULES, FLOOR, BASIS_YEAR, MAX_MONTHS, DEFAULT_WAGE, ruleLabel, won } from '../../lib/leavePay';
+import { RULES, MODES, FLOOR, BASIS_YEAR, AS_OF, MAX_MONTHS, DEFAULT_WAGE, SOURCES, ruleLabel, won } from '../../lib/leavePay';
 const year = BASIS_YEAR ?? '[기준 연도]';
+const title = `육아휴직 급여 계산기 ${year} — 일반·부모 함께(6+6)·한부모 | leave-lab`;
+const description = `월 통상임금과 휴직 기간을 넣으면 달마다 받는 육아휴직 급여와 총액을 바로 보여 줍니다. ${year}년 고용24 기준 구간별 지급률과 상한·하한, 부모 함께(6+6)와 한부모 특례까지 반영했습니다.`;
+const siteUrl = Astro.site?.href ?? 'https://leave-lab.com/';
+const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
+const schema = [
+  {
+    '@context': 'https://schema.org', '@type': 'WebApplication',
+    name: '육아휴직 급여 계산기', url: pageUrl, description,
+    applicationCategory: 'FinanceApplication', operatingSystem: 'Web', isAccessibleForFree: true, inLanguage: 'ko',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' }, dateModified: AS_OF,
+    publisher: { '@type': 'Organization', name: 'leave-lab', url: siteUrl },
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: '홈', item: siteUrl },
+      { '@type': 'ListItem', position: 2, name: '계산기', item: new URL('/tools/', siteUrl).href },
+      { '@type': 'ListItem', position: 3, name: '육아휴직 급여 계산기', item: pageUrl },
+    ],
+  },
+];
 ---
-<Base title="육아휴직 급여 계산기 — leave-lab" description="월 통상임금과 휴직 기간을 넣으면 달마다 받는 육아휴직 급여와 총액, 월 평균을 바로 보여 줍니다. 구간별 지급률과 상한·하한을 계산 방식에 그대로 적었습니다.">
+<Base title={title} description={description} schema={schema}>
   <main class="container page">
     <nav class="crumbs" aria-label="현재 위치"><a href="/">홈</a><span>/</span><a href="/tools/">계산기</a><span>/</span><span>육아휴직 급여</span></nav>
 
     <div class="page-head">
-      <span class="eyebrow">TOOL-01 · {year} 기준</span>
+      <span class="eyebrow">TOOL-01 · {year} 기준 · 확인일 {AS_OF}</span>
       <h1>육아휴직 급여 계산기</h1>
-      <p class="lead">월 통상임금과 휴직 기간을 넣으면 달마다 받는 금액과 총액을 바로 보여줍니다.</p>
+      <p class="lead">월 통상임금과 휴직 기간을 넣으면 달마다 받는 금액과 총액을 바로 보여줍니다. 일반, 부모 함께(6+6), 한부모 세 가지 구간을 고를 수 있습니다.</p>
     </div>
 
     <div class="calc-cols">
       <form class="card calc-form" aria-label="입력" onsubmit="return false">
         <span class="k">INPUT</span>
         <div class="field">
+          <span id="mode-label" style="font-size:15px;font-weight:500">휴직 유형</span>
+          <div class="modes" role="radiogroup" aria-labelledby="mode-label">
+            {MODES.map((m, i) => (
+              <label class={i === 0 ? 'on' : ''}>
+                <input type="radio" name="mode" value={m.id} data-note={m.note} checked={i === 0} />
+                <span>{m.label}</span>
+              </label>
+            ))}
+          </div>
+          <span class="hint" id="mode-note">{MODES[0].note}</span>
+        </div>
+        <div class="field">
           <label for="wage">월 통상임금 (원)</label>
           <input id="wage" type="number" inputmode="numeric" min="0" step="10000" value={DEFAULT_WAGE} />
-          <span class="hint">세전 기본급과 고정 수당을 합한 금액</span>
+          <span class="hint">세전 기본급과 고정 수당을 합한 금액. 휴직 시작일 기준입니다.</span>
         </div>
         <div class="field">
           <div class="between"><label for="months">휴직 기간</label><span class="val"><span id="months-val">{MAX_MONTHS}</span>개월</span></div>
           <input id="months" type="range" min="1" max={MAX_MONTHS} step="1" value={MAX_MONTHS} />
           <div class="ticks"><span>1</span><span>{Math.round(MAX_MONTHS / 2)}</span><span>{MAX_MONTHS}</span></div>
         </div>
-        <div class="notice">구간별 지급률과 상한액은 {year} 고용노동부 기준으로 맞춰야 합니다. 실제 적용 전 고용24에서 확인하세요.</div>
+        <div class="notice">구간별 지급률과 상한액은 {year}년 고용24 제도안내 기준입니다. 실제 지급액은 고용센터 심사 결과에 따르니 신청 전 고용24에서 한 번 더 확인하세요.</div>
       </form>
 
       <section class="calc-result" aria-label="결과">
@@ -44,14 +77,22 @@ const year = BASIS_YEAR ?? '[기준 연도]';
 
     <section class="rules">
       <h2>계산 방식</h2>
-      <div class="rule-list">
-        {RULES.map((r, i) => <div class="rule"><span class="k">{ruleLabel(i)}</span><span>통상임금의 {Math.round(r.rate * 100)}%, 상한 {won(r.cap)}원</span></div>)}
-        <div class="rule"><span class="k">하한</span><span>계산액이 {won(FLOOR)}원보다 적으면 {won(FLOOR)}원</span></div>
-      </div>
+      {MODES.map((m, i) => (
+        <div class="rule-list" data-mode={m.id} hidden={i !== 0}>
+          {RULES[m.id].map((r, j) => <div class="rule"><span class="k">{ruleLabel(RULES[m.id], j)}</span><span>통상임금의 {Math.round(r.rate * 100)}%, 상한 {won(r.cap)}원</span></div>)}
+          <div class="rule"><span class="k">하한</span><span>계산액이 {won(FLOOR)}원보다 적으면 {won(FLOOR)}원</span></div>
+        </div>
+      ))}
+      <p class="note">부모 함께(6+6)는 자녀 생후 18개월 안에 부모 모두가 육아휴직을 써야 적용되고, 각자의 첫 6개월에만 특례 상한이 붙습니다. 7개월째부터는 일반 규칙(통상임금 80%, 상한 160만 원)으로 돌아갑니다. 한부모 특례는 첫 3개월에만 적용됩니다.</p>
       <p class="fine">이 계산기는 참고용이며 실제 지급액은 고용센터 심사 결과에 따릅니다. 입력값은 이 브라우저 안에서만 계산되고 전송·저장되지 않습니다.</p>
     </section>
 
-    <a class="card related" href="/tools/leave-side-income.html">
+    <section class="card calc-sources" aria-label="근거">
+      <div class="card-head"><span>SOURCES</span><span>확인일 {AS_OF}</span></div>
+      <ul>{SOURCES.map(s => <li><a href={s.url} rel="nofollow noopener" target="_blank">{s.title}</a></li>)}</ul>
+    </section>
+
+    <a class="card related" href="/tools/leave-side-income">
       <span><span class="k">함께 보기</span><span class="t">육아휴직 중 부업 소득 판정기</span></span>
       <span class="go">열기 →</span>
     </a>
@@ -59,21 +100,30 @@ const year = BASIS_YEAR ?? '[기준 연도]';
 </Base>
 
 <script>
-  import { calcLeavePay, won } from '../../lib/leavePay';
+  import { calcLeavePay, won, type Mode } from '../../lib/leavePay';
   const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
   const wageEl = $<HTMLInputElement>('wage'), monthsEl = $<HTMLInputElement>('months');
+  const modeEls = Array.from(document.querySelectorAll<HTMLInputElement>('input[name="mode"]'));
+  const mode = () => (modeEls.find(m => m.checked)?.value ?? 'general') as Mode;
   function update() {
     const wage = Number(wageEl.value) || 0;
     const months = Number(monthsEl.value) || 0;
-    const r = calcLeavePay(wage, months);
+    const m = mode();
+    const r = calcLeavePay(wage, months, m);
     $('months-val').textContent = String(months);
     $('total').textContent = won(r.total);
     $('avg').textContent = won(r.avg);
     $('bars').innerHTML = r.amounts.map((v, i) =>
       `<div class="bar-row"><span class="l">${i + 1}월</span><div class="track"><div class="fill" style="width:${Math.round(v / r.max * 100)}%"></div></div><span class="a">${won(v)}</span></div>`
     ).join('');
+    // 선택한 유형의 계산 방식 표만 보여 주고, 유형 설명을 바꾼다
+    document.querySelectorAll<HTMLElement>('.rule-list[data-mode]').forEach(el => { el.hidden = el.dataset.mode !== m; });
+    modeEls.forEach(el => el.closest('label')?.classList.toggle('on', el.checked));
+    const note = modeEls.find(el => el.checked)?.dataset.note;
+    if (note) $('mode-note').textContent = note;
   }
   wageEl.addEventListener('input', update);
   monthsEl.addEventListener('input', update);
+  modeEls.forEach(el => el.addEventListener('change', update));
   update();
 </script>

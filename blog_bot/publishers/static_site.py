@@ -43,6 +43,14 @@ class Post:
     verdict: Verdict | None = None
     slug: str | None = None   # 없으면 제목에서 생성
     draft: bool = False
+    # 선택 항목 (content.config.ts의 분류·실험 카드). 없으면 frontmatter에 쓰지 않는다
+    category: str | None = None    # 개발 | 자동화 | 수익 | 육아
+    hypothesis: str | None = None  # EXPERIMENT CARD 한 줄씩
+    method: str | None = None
+    result: str | None = None
+
+
+CATEGORIES = ("개발", "자동화", "수익", "육아")
 
 
 class PublishError(RuntimeError):
@@ -75,6 +83,8 @@ def render_frontmatter(p: Post) -> str:
     ]
     if p.verdict:
         lines.append(f"verdict: {p.verdict}")
+    if p.category in CATEGORIES:
+        lines.append(f"category: {p.category}")
     lines.append("tags: [" + ", ".join(_yaml_str(t) for t in p.tags) + "]")
     if p.sources:
         lines.append("sources:")
@@ -82,6 +92,10 @@ def render_frontmatter(p: Post) -> str:
             lines.append(f"  - {{ title: {_yaml_str(s.title)}, url: {_yaml_str(s.url)} }}")
     else:
         lines.append("sources: []")
+    for key in ("hypothesis", "method", "result"):
+        val = (getattr(p, key) or "").strip()
+        if val:
+            lines.append(f"{key}: {_yaml_str(val)}")
     lines.append(f"draft: {'true' if p.draft else 'false'}")
     lines.append("---")
     return "\n".join(lines) + "\n\n"
