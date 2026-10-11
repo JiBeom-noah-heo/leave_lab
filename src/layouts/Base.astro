@@ -3,8 +3,11 @@ import '../styles/global.css';
 import { SITE } from '../site';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-interface Props { title: string; description: string; lang?: 'ko' | 'th'; }
-const { title, description, lang = 'ko' } = Astro.props;
+interface Props { title: string; description: string; lang?: 'ko' | 'th'; image?: string }
+// image: 링크 공유 미리보기 그림. 글마다 다른 그림을 쓰고 싶으면 넘기고, 없으면 사이트 대표 이미지.
+const { title, description, lang = 'ko', image = '/img/2026/og-default.png' } = Astro.props;
+const pageUrl = new URL(Astro.url.pathname, Astro.site);
+const imageUrl = new URL(image, Astro.site);
 const ads = import.meta.env.PUBLIC_ADSENSE_CLIENT;
 ---
 <!doctype html>
@@ -16,7 +19,23 @@ const ads = import.meta.env.PUBLIC_ADSENSE_CLIENT;
   <title>{title}</title>
   <meta name="description" content={description} />
   {SITE.naverVerification && <meta name="naver-site-verification" content={SITE.naverVerification} />}
-  <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+  <link rel="canonical" href={pageUrl} />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon-48.png" sizes="48x48" type="image/png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="leave-lab" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={pageUrl} />
+  <meta property="og:image" content={imageUrl} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content={lang === 'th' ? 'th_TH' : 'ko_KR'} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={imageUrl} />
   <link rel="alternate" type="application/rss+xml" href="/rss.xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+Thai:wght@400;500;700&display=swap" />
