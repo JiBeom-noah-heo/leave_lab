@@ -1,5 +1,5 @@
-# Cloudflare Pages 리다이렉트 규칙
+# Cloudflare Pages 리다이렉트 규칙 (dist/에 그대로 복사된다)
 # 흔히 쓰는 사이트맵 주소를 Astro가 만드는 색인 파일로 보낸다
 /sitemap.xml /sitemap-index.xml 301
-# www는 본 주소로 (중복 색인 방지)
-https://www.leave-lab.com/* https://leave-lab.com/:splat 301
+# www → 본 주소 리다이렉트는 이 파일의 호스트 규칙이 Pages에서 적용되지 않았다(2026-10-12 확인: www가 200으로 열림).
+# Cloudflare 대시보드 › Rules › Redirect Rules › 템플릿 "Redirect from WWW to root"로 처리한다.
