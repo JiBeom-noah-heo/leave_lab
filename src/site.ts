@@ -2,7 +2,7 @@
 export const SITE = {
   name: '육아휴직 개발자 수익화 실험',
   // 공개해도 되는 문의용 이메일. 비워 두면 문의 페이지는 GitHub 이슈만 안내한다.
-  contactEmail: '',
+  contactEmail: 'hello@leave-lab.com',
   issues: 'https://github.com/JiBeom-noah-heo/leave_lab/issues',
   privacyEffective: '2026-10-07',
   // 검색엔진 소유 확인
