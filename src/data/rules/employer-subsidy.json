@@ -1,0 +1,192 @@
+{
+  "id": "employer-subsidy",
+  "name": "출산육아기 고용안정장려금 (사업주)",
+  "asOf": "2026-10-12",
+  "basisYear": 2026,
+  "sources": [
+    {
+      "id": "notice-2026-52",
+      "title": "고용노동부고시 제2026-52호 「고용창출장려금·고용안정장려금의 신청 및 지급에 관한 규정」 별표 5 (시행 2026-07-01)",
+      "url": "https://www.law.go.kr/admRulInfoP.do?admRulSeq=2100000281720",
+      "checked": "2026-10-12",
+      "note": "금액 근거. 화면은 JS 로딩이라 본문은 법제처 Open API XML(target=admrul&ID=2100000281720)로 확인. 육아휴직 30만·특례 첫 3개월 100만(최대 1년 6개월 한도)·남성 인센티브 10만(1~3번째), 대체 140/130/단축 120(임금 80% 한도, 사용 전 2개월·복직 후 1개월 인수인계 포함), 업무분담 60/40/단축 20, 배우자 출산휴가 업무분담 60/40(최대 지급액, 일할 계산 없음). 특례 각주: '육아휴직 대체인력지원금과 중복하여 지원받을 수 없음'. 제16조제3호: 신고 월평균 보수 124만 원 미만 근로자 제외."
+    },
+    {
+      "id": "notice-2025-114",
+      "title": "고용노동부고시 제2025-114호 부칙 — 2026년 개정 단가의 적용 시점",
+      "url": "https://www.law.go.kr/DRF/lawService.do?OC=test&target=admrul&ID=2100000271382&type=XML",
+      "checked": "2026-10-12",
+      "note": "부칙 제3조⑥: 육아휴직 지원금 개정 규정은 2026-01-01 이후 육아휴직을 사용한 경우부터. 제3조⑦: 2026-01-01 전에 고용한 대체인력도 2026-01-01 이후 기간은 새 단가. 제3조①: 124만 원 기준은 2026-01-01 이후 허용·지정·고용분부터."
+    },
+    {
+      "id": "decree-29",
+      "title": "고용보험법 시행령 제29조(출산육아기 고용안정장려금) (시행 2026-09-18, 대통령령 제36588호)",
+      "url": "https://www.law.go.kr/LSW//lsLawLinkInfo.do?lsJoLnkSeq=1000770181&chrClsCd=010202&lsId=002249&print=print",
+      "checked": "2026-10-12",
+      "note": "제1항: 우선지원대상기업, 육아휴직등 30일 이상, 대체인력 감원 금지(고용 전 3개월~고용 후 1년), 배우자 출산전후휴가 20일 연속 업무분담. 제2항: 임금체불 명단공개·상습체불사업주 제외. 제6항: 육아휴직 지원금은 50%를 먼저, 나머지는 복귀 후 6개월 계속 고용 시(근로자 자기 사정 이직 포함) 지급. 대체인력·업무분담은 100% 지급."
+    },
+    {
+      "id": "decree-history",
+      "title": "국가법령정보센터 · 고용보험법 시행령 제·개정이유 (2025-01-01 ~ 2026-09-18 개정)",
+      "url": "https://www.law.go.kr/LSW/lsRvsRsnListP.do?lsId=002249&lsRvsGubun=all&chrClsCd=010102",
+      "checked": "2026-10-12",
+      "note": "2026-05-12(제36306호) 상습체불사업주 지급 제한, 2026-07-01(제36472호) 배우자 출산휴가 업무분담, 2026-09-18(제36588호) 배우자 출산전후휴가로 정비."
+    },
+    {
+      "id": "moel-notice-2026",
+      "title": "고용노동부 공고 제2026-55호 · 2026년도 고용창출장려금 및 고용안정장려금 사업 수정 공고 (2026-01-22)",
+      "url": "https://www.moel.go.kr/news/notice/noticeView.do?bbs_seq=20260100937",
+      "checked": "2026-10-12",
+      "note": "첨부 hwp 원문 확인. 출산육아기 부분은 원 공고(제2025-510호)와 같다. 지원 제외 근로자: 고용보험 미가입, 사업주 배우자·직계존비속, 외국인(F2·F5·F6 제외), 신고 월평균 보수 124만 원 미만. 신청기한: 사용 종료일부터 12개월 이내, 3개월 단위."
+    },
+    {
+      "id": "gov24",
+      "title": "정부24 · 출산육아기 고용안정장려금 (최종수정 2026-08-05)",
+      "url": "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/WII000001060",
+      "checked": "2026-10-12",
+      "note": "'육아휴직지원금 특례를 지원받은 경우, 육아휴직 대체인력지원금 전체 기간에 대한 지원 제한'. 육아휴직·단축 지원금 50%는 종료 후 6개월 계속 고용 시 지급."
+    },
+    {
+      "id": "work24-substitute",
+      "title": "고용24 · 대체인력지원금 제도안내 (최종 수정 2026-01-02)",
+      "url": "https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systId=SI00000393&systClId=SC00000303",
+      "checked": "2026-10-12",
+      "note": "'육아휴직지원금 특례를 지원받는 경우 동일 자녀에 대한 육아휴직 대체인력지원금 전체 기간에 대해 중복하여 지원하지 않습니다.'"
+    },
+    {
+      "id": "moel-pr-20260325",
+      "title": "고용노동부 보도자료 (2026-03-25) · 대체인력 문화확산 지원금",
+      "url": "https://www.korea.kr/briefing/pressReleaseView.do?newsId=156750814",
+      "checked": "2026-10-12",
+      "note": "신한금융그룹 출연 100억 원. 50인 미만 중소기업이 처음으로 육아휴직 대체인력을 채용하면 채용 후 3·6개월에 100만 원씩, 기업당 최초 1명 200만 원. 최근 3년 대체인력지원금 수령 이력 없을 것. 정부 대체인력지원금과 별도. 예산 소진 시 종료."
+    },
+    {
+      "id": "center-substitute",
+      "title": "서남권직장맘지원센터 · [2026 사업주지원금] 대체인력지원금 총정리 (2026-08-03, 2차 해설)",
+      "url": "https://gworkingmom.net/network/articles/134",
+      "checked": "2026-10-12",
+      "note": "계산 예시(20인, 대체인력 6개월 840만 원)와 일할 계산(남은 일수 ÷ 해당 월 총일수). 대체인력은 휴가 시작 2개월 전이 되는 날 이후 새로 고용해야 한다."
+    },
+    {
+      "id": "center-sharing",
+      "title": "서남권직장맘지원센터 · [2026 사업주지원금] 업무분담지원금 총정리 (2026-08-28, 2차 해설)",
+      "url": "https://gworkingmom.net/network/articles/135",
+      "checked": "2026-10-12",
+      "note": "계산 예시(20인, 3개월 180만 원). 배우자 출산휴가 업무분담은 월 단위가 아니라 휴가 1회에 한 번 지급."
+    }
+  ],
+  "versions": [
+    {
+      "effectiveFrom": "2026-01-01",
+      "note": "고시 제2025-114호·시행령 제35934호 시행. 이 계산기는 2026-01-01 이후 시작한 휴직만 계산한다(그 전 규칙은 넣지 않았다).",
+      "values": {
+        "minLeaveDays": 30,
+        "applyWithinMonths": 12,
+        "smallBelow": 30,
+        "leaveSubsidy": {
+          "label": "육아휴직 지원금",
+          "monthly": 300000,
+          "maxMonths": 18,
+          "special": {
+            "label": "육아휴직 지원금 특례 (만 12개월 이내 자녀)",
+            "monthly": 1000000,
+            "months": 3,
+            "childMaxAgeMonths": 12,
+            "minConsecutiveMonths": 3
+          },
+          "maleIncentive": { "label": "남성 육아휴직 인센티브", "monthly": 100000, "maxOrdinal": 3 },
+          "deferred": { "share": 0.5, "afterMonths": 6 },
+          "sources": ["notice-2026-52", "notice-2025-114", "decree-29", "gov24"]
+        },
+        "substitute": {
+          "label": "대체인력지원금",
+          "capSmall": 1400000,
+          "capLarge": 1300000,
+          "wageRatio": 0.8,
+          "minDays": 30,
+          "hireNotBeforeMonths": 2,
+          "preHandoverMonths": 2,
+          "postHandoverMonths": 1,
+          "noLayoffMonthsBefore": 3,
+          "noLayoffMonthsAfter": 12,
+          "excludedWithSpecial": true,
+          "sources": ["notice-2026-52", "notice-2025-114", "decree-29", "gov24", "work24-substitute", "center-substitute"]
+        },
+        "workSharing": {
+          "label": "업무분담지원금",
+          "capSmall": 600000,
+          "capLarge": 400000,
+          "maxSharers": 5,
+          "sources": ["notice-2026-52", "decree-29", "center-sharing"]
+        },
+        "spouseLeaveSharing": null,
+        "cultureFund": {
+          "label": "대체인력 문화확산 지원금 (신한금융 재원)",
+          "amount": 2000000,
+          "maxInsured": 49,
+          "sources": ["moel-pr-20260325"]
+        },
+        "notices": {
+          "priority": {
+            "text": "우선지원대상기업(중소기업 등)만 받을 수 있습니다. 공공기관과 일부 유흥·사행업종은 제외됩니다.",
+            "sources": ["decree-29", "moel-notice-2026"]
+          },
+          "arrears": {
+            "text": "임금체불로 명단이 공개 중인 사업주는 받을 수 없습니다.",
+            "sources": ["moel-notice-2026", "decree-29"]
+          },
+          "excludedWorkers": {
+            "text": "휴직자·대체인력·업무분담자 중 고용보험 미가입자, 사업주(법인은 대표이사)의 배우자·직계존비속, 고용보험에 신고한 월평균 보수가 124만 원 미만인 사람(단시간 근로자는 근무시간 비례)은 지원 대상이 아닙니다.",
+            "sources": ["notice-2026-52", "moel-notice-2026"]
+          },
+          "sharingRules": {
+            "text": "업무분담자는 휴직자 1명당 최대 5명, 업무분담자 1명은 휴직자 1명만 맡을 수 있습니다. 지원금은 실제로 준 분담 수당을 넘지 않고, 같은 휴직에 대체인력지원금과 함께 받을 수 없습니다.",
+            "sources": ["notice-2026-52", "center-sharing"]
+          },
+          "specialVsSubstitute": {
+            "text": "특례(첫 3개월 월 100만 원)를 받으면 같은 휴직의 대체인력지원금을 받을 수 없습니다. 고시는 '중복 불가'라고만 쓰고, 정부24·고용24 안내는 '대체인력지원금 전체 기간'을 제한한다고 씁니다. 이 계산기는 안내문 기준으로 계산합니다.",
+            "sources": ["notice-2026-52", "gov24", "work24-substitute"]
+          }
+        }
+      }
+    },
+    {
+      "effectiveFrom": "2026-05-12",
+      "sources": ["decree-history", "decree-29"],
+      "note": "대통령령 제36306호: 상습체불사업주 지급 제한.",
+      "values": {
+        "notices": {
+          "arrears": {
+            "text": "임금체불로 명단이 공개 중이거나 상습체불사업주로 정해진 사업주는 받을 수 없습니다(상습체불은 2026-05-12부터).",
+            "sources": ["decree-29", "decree-history"]
+          }
+        }
+      }
+    },
+    {
+      "effectiveFrom": "2026-07-01",
+      "sources": ["decree-history", "notice-2026-52"],
+      "note": "대통령령 제36472호·고시 제2026-52호: 배우자 출산휴가 20일 연속 사용 시 업무분담지원금.",
+      "values": {
+        "spouseLeaveSharing": {
+          "label": "배우자 출산휴가 업무분담지원금",
+          "capSmall": 600000,
+          "capLarge": 400000,
+          "minConsecutiveDays": 20,
+          "sources": ["notice-2026-52", "decree-29", "decree-history", "center-sharing"]
+        }
+      }
+    },
+    {
+      "effectiveFrom": "2026-09-18",
+      "sources": ["decree-history", "decree-29"],
+      "note": "대통령령 제36588호: '배우자 출산휴가'를 '배우자 출산전후휴가'로 정비(출산예정일 50일 전부터 사용 가능). 고시는 아직 옛 용어.",
+      "values": {
+        "spouseLeaveSharing": { "label": "배우자 출산전후휴가 업무분담지원금" }
+      }
+    }
+  ],
+  "changelog": [
+    { "date": "2026-10-12", "note": "처음 작성. 고시 제2026-52호 별표 5, 시행령 제29조(2026-09-18), 공고 제2026-55호, 정부24와 대조." }
+  ]
+}

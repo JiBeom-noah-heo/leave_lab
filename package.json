@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "astro dev",
     "build": "node -e \"require('fs').rmSync('.astro',{recursive:true,force:true})\" && astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "test": "node --test \"tests/**/*.test.ts\""
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.0.0",
