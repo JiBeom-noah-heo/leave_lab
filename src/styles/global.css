@@ -175,8 +175,24 @@ a{color:var(--accent)}a:hover{color:var(--accent-dark)}
 .prose hr{border:0;border-top:1.5px solid var(--ink);margin:0 0 20px}
 /* 실험로그 첫 표(매출·비용·시간·실패)는 숫자판처럼 */
 .prose.log>table:first-child{display:table;border:1.5px solid var(--ink);background:var(--white);border-radius:4px;border-collapse:separate;border-spacing:0;overflow:hidden}
-.prose.log>table:first-child th{border:0;padding:14px 18px 0;font-size:12px}
-.prose.log>table:first-child td{border:0;padding:2px 18px 14px;font-family:var(--mono);font-size:18px;font-weight:600}
+.prose.log>table:first-child th{border:0;padding:14px 16px 0;font-size:12px;white-space:nowrap}
+.prose.log>table:first-child td{border:0;padding:2px 16px 14px;font-family:var(--mono);font-size:17px;font-weight:600;word-break:keep-all;overflow-wrap:anywhere}
+/* 좁은 화면에서는 4열이 글자 단위로 꺾이므로 2×2 카드로 바꾼다. th/td를 grid-area로 짝지어 배치 */
+@media(max-width:600px){
+  .prose.log>table:first-child{display:grid;grid-template-columns:1fr 1fr;overflow:visible}
+  .prose.log>table:first-child thead,.prose.log>table:first-child tbody,.prose.log>table:first-child tr{display:contents}
+  .prose.log>table:first-child th{padding:12px 14px 0;white-space:normal}
+  .prose.log>table:first-child td{padding:2px 14px 12px;font-size:16px}
+  .prose.log>table:first-child th:nth-child(1){grid-area:1/1}
+  .prose.log>table:first-child td:nth-child(1){grid-area:2/1}
+  .prose.log>table:first-child th:nth-child(2){grid-area:1/2}
+  .prose.log>table:first-child td:nth-child(2){grid-area:2/2}
+  /* 시간·실패는 값이 길어서 한 줄을 통째로 쓴다 */
+  .prose.log>table:first-child th:nth-child(3){grid-area:3/1/4/3;border-top:1px solid var(--line)}
+  .prose.log>table:first-child td:nth-child(3){grid-area:4/1/5/3}
+  .prose.log>table:first-child th:nth-child(4){grid-area:5/1/6/3;border-top:1px solid var(--line)}
+  .prose.log>table:first-child td:nth-child(4){grid-area:6/1/7/3}
+}
 /* 글 끝 '정리' 블록은 카드로 (src/lib/rehypeSummary.mjs가 section.summary로 감싼다) */
 .prose .summary{background:var(--white);border:1.5px solid var(--ink);border-radius:4px;margin:28px 0 20px;padding:0 20px 18px;font-size:16px;line-height:1.7}
 .prose .summary h2{margin:0 -20px 10px;padding:14px 20px;border-bottom:1px dashed var(--muted-2);font-size:15px;font-weight:700;letter-spacing:0}
