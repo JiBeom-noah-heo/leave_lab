@@ -5,7 +5,7 @@ const { lang = 'ko' } = Astro.props;
 const path = Astro.url.pathname;
 const items: [string, string][] = lang === 'th'
   ? [['/th/', 'บันทึก'], ['/tools/', 'เครื่องมือ'], ['/about/', 'เกี่ยวกับ']]
-  : [['/log/', '실험 로그'], ['/tools/', '계산기'], ['/about/', '소개']];
+  : [['/log/', '실험 로그'], ['/series/', '연재'], ['/tools/', '계산기'], ['/about/', '소개']];
 const isCurrent = (href: string) => path.startsWith(href);
 // 태국어 글이 하나도 없으면 한국어 페이지에서는 언어 전환을 숨긴다. 빈 페이지로 보내지 않기 위해서다.
 const thCount = (await getCollection('log', p => p.data.lang === 'th' && !p.data.draft)).length;

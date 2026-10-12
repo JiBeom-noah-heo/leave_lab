@@ -1,0 +1,59 @@
+---
+import Base from '../../layouts/Base.astro';
+import SeriesStrip from '../../components/SeriesStrip.astro';
+import { getCollection } from 'astro:content';
+import { activeSeries } from '../../series';
+import { ymd, statusOf } from '../../ui';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('log', p => p.data.lang === 'ko' && !p.data.draft);
+  return activeSeries(posts).map(({ series, episodes }) => ({ params: { id: series.id }, props: { series, episodes, posts } }));
+}
+const { series, episodes, posts } = Astro.props;
+const slug = (id: string) => id.replace(/^ko\//, '');
+const first = episodes[0], last = episodes[episodes.length - 1];
+const siteUrl = Astro.site?.href ?? 'https://leave-lab.com/';
+const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
+const title = `${series.name} 연재 — leave-lab`;
+const description = `${series.blurb} ${episodes.length}편, ${ymd(first.data.date)}부터.`.slice(0, 160);
+const schema = [
+  {
+    '@context': 'https://schema.org', '@type': 'CreativeWorkSeries',
+    name: series.name, description: series.blurb, url: pageUrl, inLanguage: 'ko',
+    hasPart: episodes.map((p, i) => ({ '@type': 'BlogPosting', position: i + 1, headline: p.data.title, url: new URL(`/log/${slug(p.id)}/`, siteUrl).href, datePublished: ymd(p.data.date) })),
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: '홈', item: siteUrl },
+      { '@type': 'ListItem', position: 2, name: '연재', item: new URL('/series/', siteUrl).href },
+      { '@type': 'ListItem', position: 3, name: series.name, item: pageUrl },
+    ],
+  },
+];
+---
+<Base title={title} description={description} schema={schema}>
+  <main class="container page">
+    <nav class="crumbs" aria-label="현재 위치"><a href="/">홈</a><span>/</span><a href="/series/">연재</a><span>/</span><span>{series.name}</span></nav>
+    <div class="page-head">
+      <span class="eyebrow">SERIES · {episodes.length}편 · {ymd(first.data.date)} ~ {ymd(last.data.date)}</span>
+      <h1>{series.name}</h1>
+      <p class="lead">{series.blurb}</p>
+    </div>
+
+    <div class="log-list" aria-label="연재 글 목록">
+      {episodes.map((p, i) => { const s = statusOf(p.data); return (
+        <a class="log-row" href={`/log/${slug(p.id)}/`}>
+          <span class="no">{i + 1}편</span>
+          <span class="title">{p.data.title}</span>
+          <span class="date">{ymd(p.data.date)}</span>
+          {s.label && <span class={`status ${s.cls}`}>{s.label}</span>}
+        </a>
+      ); })}
+    </div>
+
+    <div style="margin-top:28px">
+      <SeriesStrip posts={posts} current={series.id} />
+    </div>
+  </main>
+</Base>

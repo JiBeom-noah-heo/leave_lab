@@ -31,6 +31,7 @@ date: 2026-09-28
 lang: ko            # ko | th
 series: 검증일지     # 검증일지 | 실험로그 | 가이드
 verdict: NO-GO      # 검증일지만. GO | NO-GO | HOLD
+project: wit-commerce  # 선택. 글감 메모의 project 그대로. src/series.ts가 연재(시리즈)로 묶는다
 tags: [쇼피, 태국, 규제]
 sources:            # 검증일지는 필수. 링크 없는 판정은 발행 금지
   - { title: "Thai FDA 화장품 신고", url: "https://en.fda.moph.go.th/entrepreneurs-cosmetics" }

@@ -1,0 +1,17 @@
+---
+// 연재별로 보기 칩. 홈과 실험 로그 목록 위에 둔다.
+import type { CollectionEntry } from 'astro:content';
+import { activeSeries } from '../series';
+interface Props { posts: CollectionEntry<'log'>[]; current?: string }
+const { posts, current } = Astro.props;
+const items = activeSeries(posts);
+---
+{items.length > 0 && (
+  <nav class="series-strip" aria-label="연재별로 보기">
+    <span class="k">SERIES</span>
+    {items.map(({ series, episodes }) => (
+      <a class="chip" href={`/series/${series.id}/`} aria-current={series.id === current ? 'page' : undefined}>{series.name}<b>{episodes.length}</b></a>
+    ))}
+    <a class="chip" href="/series/">전체 →</a>
+  </nav>
+)}

@@ -1,0 +1,37 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { activeSeries } from '../../series';
+import { ymd } from '../../ui';
+const posts = await getCollection('log', p => p.data.lang === 'ko' && !p.data.draft);
+const items = activeSeries(posts);
+const siteUrl = Astro.site?.href ?? 'https://leave-lab.com/';
+const schema = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '홈', item: siteUrl },
+    { '@type': 'ListItem', position: 2, name: '연재', item: new URL('/series/', siteUrl).href },
+  ],
+};
+---
+<Base title="연재 — leave-lab" description="육아휴직 중 진행하는 수익화 실험을 프로젝트별 연재로 묶었습니다. 위탁판매 자동화, 블로그 만들기, 워치 앱 등 각 실험을 1편부터 순서대로 읽을 수 있습니다." schema={schema}>
+  <main class="container page">
+    <nav class="crumbs" aria-label="현재 위치"><a href="/">홈</a><span>/</span><span>연재</span></nav>
+    <div class="page-head">
+      <span class="eyebrow">SERIES · {items.length}개 진행 중</span>
+      <h1>연재</h1>
+      <p class="lead">같은 프로젝트의 글을 1편부터 순서대로 묶었습니다. 실험 하나가 어떻게 시작해서 어디까지 왔는지 이어서 읽을 수 있습니다.</p>
+    </div>
+    <div class="series-grid">
+      {items.map(({ series, episodes }) => { const last = episodes[episodes.length - 1]; return (
+        <a class="card series-card" href={`/series/${series.id}/`}>
+          <span class="eyebrow">{episodes.length}편</span>
+          <span class="name">{series.name}</span>
+          <span class="blurb">{series.blurb}</span>
+          <span class="meta"><span>시작 {ymd(episodes[0].data.date)}</span><span>최근 {ymd(last.data.date)}</span></span>
+          <span class="latest">최근 글 · {last.data.title}</span>
+        </a>
+      ); })}
+    </div>
+  </main>
+</Base>

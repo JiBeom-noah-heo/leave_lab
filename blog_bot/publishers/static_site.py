@@ -45,6 +45,7 @@ class Post:
     draft: bool = False
     # 선택 항목 (content.config.ts의 분류·실험 카드). 없으면 frontmatter에 쓰지 않는다
     category: str | None = None    # 개발 | 자동화 | 수익 | 육아
+    project: str | None = None     # 글감 메모의 project. 사이트가 연재(시리즈)로 묶는다 (src/series.ts)
     hypothesis: str | None = None  # EXPERIMENT CARD 한 줄씩
     method: str | None = None
     result: str | None = None
@@ -85,6 +86,8 @@ def render_frontmatter(p: Post) -> str:
         lines.append(f"verdict: {p.verdict}")
     if p.category in CATEGORIES:
         lines.append(f"category: {p.category}")
+    if (p.project or "").strip():
+        lines.append(f"project: {_yaml_str(p.project.strip())}")
     lines.append("tags: [" + ", ".join(_yaml_str(t) for t in p.tags) + "]")
     if p.sources:
         lines.append("sources:")

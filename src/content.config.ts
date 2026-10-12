@@ -19,6 +19,7 @@ const log = defineCollection({
     // 실험 카드 (design/Post.dc.html). 모두 선택 사항이라 기존 글은 그대로 빌드된다.
     expId: z.string().optional(),            // 예: EXP-02
     category: z.enum(CATEGORIES).optional(), // 홈 탭 필터 기준
+    project: z.string().optional(),          // 글감 메모의 project. src/series.ts가 연재(시리즈)로 묶는 기준
     status: z.enum(STATUSES).optional(),
     startedOn: z.coerce.date().optional(),   // 실험 시작일. 없으면 발행일을 보여 준다
     hypothesis: z.string().optional(),

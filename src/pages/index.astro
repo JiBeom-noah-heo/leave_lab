@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import LogList from '../components/LogList.astro';
 import CategoryTabs from '../components/CategoryTabs.astro';
+import SeriesStrip from '../components/SeriesStrip.astro';
 import Subscribe from '../components/Subscribe.astro';
 import { getCollection } from 'astro:content';
 import registry from '../../public/tools/_registry.json';
@@ -73,6 +74,7 @@ const schema = {
       <div class="titles"><span class="eyebrow">LATEST LOGS</span><h2>최근 실험 로그</h2></div>
       <CategoryTabs target="latest-logs" />
     </div>
+    <SeriesStrip posts={posts} />
     <LogList posts={latest} id="latest-logs" />
     <a class="more" href="/log/" style="align-self:flex-end;padding:4px 0">실험 로그 전체 보기 →</a>
   </section>

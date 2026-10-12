@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import LogList from '../../components/LogList.astro';
 import CategoryTabs from '../../components/CategoryTabs.astro';
+import SeriesStrip from '../../components/SeriesStrip.astro';
 import { getCollection } from 'astro:content';
 const posts = (await getCollection('log', p => p.data.lang === 'ko' && !p.data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
@@ -12,6 +13,7 @@ const posts = (await getCollection('log', p => p.data.lang === 'ko' && !p.data.d
       <div class="titles"><span class="eyebrow">ALL LOGS</span><h1 style="margin:0;font-size:30px;letter-spacing:-.02em">실험 로그 <span class="eyebrow">{posts.length}</span></h1></div>
       <CategoryTabs target="all-logs" />
     </div>
+    <SeriesStrip posts={posts} />
     <LogList posts={posts} id="all-logs" />
   </main>
 </Base>

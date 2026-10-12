@@ -4,6 +4,7 @@ description: "외주 포트폴리오를 만들려고 디자인 시안만 넘겨 
 date: 2026-10-10
 lang: ko
 series: 실험로그
+project: chimu
 tags: ["외주", "포트폴리오", "홈페이지", "Next.js", "Claude Code", "Cloudflare", "D1", "R2", "Supabase"]
 sources:
   - { title: "OpenNext — Cloudflare", url: "https://opennext.js.org/cloudflare" }

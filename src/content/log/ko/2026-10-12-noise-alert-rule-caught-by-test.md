@@ -4,6 +4,7 @@ description: "워치 베이비모니터 앱의 소음 알림 규칙이 0.5초 �
 date: 2026-10-12
 lang: ko
 series: 실험로그
+project: baby monitor
 tags: ["워치앱", "소음감지", "테스트"]
 sources: []
 draft: false

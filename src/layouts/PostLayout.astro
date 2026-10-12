@@ -6,6 +6,7 @@ import Base from './Base.astro';
 import Subscribe from '../components/Subscribe.astro';
 import { SITE } from '../site';
 import { ymd, readingMinutes, statusOf, categoryOf, relatedTools } from '../ui';
+import { seriesOf, episodesOf } from '../series';
 
 export interface Brief { slug: string; title: string; label: string }
 interface Props { p: CollectionEntry<'log'>; prev: Brief | null; next: Brief | null; lang?: 'ko' | 'th' }
@@ -33,6 +34,17 @@ const related = (await getCollection('log', q => q.data.lang === lang && !q.data
   .slice(0, 3);
 const tools = relatedTools(d);
 
+// 연재: 같은 project의 글을 1편부터 순서대로. 연재 안에서는 이전·다음 글도 연재 순서를 따른다.
+const ser = seriesOf(d);
+const episodes = ser ? episodesOf(ser, await getCollection('log', q => q.data.lang === lang && !q.data.draft)) : [];
+const epIdx = episodes.findIndex(q => q.id === p.id);
+const inSeries = Boolean(ser) && epIdx >= 0;
+const epBrief = (i: number): Brief => ({ slug: slugOf(episodes[i].id), title: episodes[i].data.title, label: `${ser!.name} ${i + 1}편` });
+const nav = inSeries
+  ? { prev: epIdx > 0 ? epBrief(epIdx - 1) : null, next: epIdx < episodes.length - 1 ? epBrief(epIdx + 1) : null }
+  : { prev, next };
+const seriesUrl = ser ? new URL(`/series/${ser.id}/`, siteUrl).href : null;
+
 const t = th
   ? { home: 'หน้าแรก', logs: 'บันทึก', read: (m: number) => `อ่าน ${m} นาที`, started: 'เริ่ม', published: 'เผยแพร่', contents: 'CONTENTS', sources: 'SOURCES', related: 'RELATED', tool: 'เครื่องมือ', asOf: 'ข้อมูล ณ', prev: '←', next: '→' }
   : { home: '홈', logs: '실험 로그', read: (m: number) => `읽는 데 ${m}분`, started: '시작', published: '발행', contents: 'CONTENTS', sources: 'SOURCES', related: 'RELATED', tool: '계산기', asOf: '기준일', prev: '←', next: '→' };
@@ -48,6 +60,7 @@ const schema = [
     image: new URL('/img/2026/og-default.png', siteUrl).href,
     author: org,
     publisher: { ...org, logo: { '@type': 'ImageObject', url: new URL('/icon-512.png', siteUrl).href } },
+    ...(inSeries ? { isPartOf: { '@type': 'CreativeWorkSeries', name: ser!.name, url: seriesUrl }, position: epIdx + 1 } : {}),
   },
   {
     '@context': 'https://schema.org', '@type': 'BreadcrumbList',
@@ -76,6 +89,13 @@ const schema = [
         {SITE.author && <span>{SITE.author}</span>}<span>{ymd(d.date)}</span><span>{t.read(readingMinutes(p.body ?? ''))}</span>
       </div>
     </div>
+
+    {inSeries && !th && (
+      <nav class="series-bar" aria-label="연재">
+        <a href={`/series/${ser!.id}/`}><span class="k">SERIES</span><span class="t">{ser!.name}</span></a>
+        <span class="pos">{epIdx + 1} / {episodes.length}편</span>
+      </nav>
+    )}
 
     {hasCard && (
       <section class="card lift exp-card" aria-label="실험 요약">
@@ -128,10 +148,10 @@ const schema = [
       </section>
     )}
 
-    {(prev || next) && (
-      <nav class="pn" aria-label="이전·다음 글">
-        {prev ? <a class="card" href={`${base}${prev.slug}/`}><span class="k">{t.prev} {prev.label}</span><span class="t">{prev.title}</span></a> : <span />}
-        {next && <a class="card next" href={`${base}${next.slug}/`}><span class="k">{next.label} {t.next}</span><span class="t">{next.title}</span></a>}
+    {(nav.prev || nav.next) && (
+      <nav class="pn" aria-label={inSeries ? '연재의 이전·다음 편' : '이전·다음 글'}>
+        {nav.prev ? <a class="card" href={`${base}${nav.prev.slug}/`}><span class="k">{t.prev} {nav.prev.label}</span><span class="t">{nav.prev.title}</span></a> : <span />}
+        {nav.next && <a class="card next" href={`${base}${nav.next.slug}/`}><span class="k">{nav.next.label} {t.next}</span><span class="t">{nav.next.title}</span></a>}
       </nav>
     )}
 
