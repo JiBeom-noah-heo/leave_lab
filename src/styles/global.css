@@ -230,7 +230,7 @@ a{color:var(--accent)}a:hover{color:var(--accent-dark)}
 .kpi b{font-family:var(--mono);font-size:32px;font-weight:600;line-height:1.2;overflow-wrap:anywhere}
 .bars{padding:8px 20px 16px;display:flex;flex-direction:column}
 .bar-row{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid var(--grid)}
-.bar-row .l{font-family:var(--mono);font-size:13px;color:var(--muted);width:44px;flex:none}
+.bar-row .l{font-family:var(--mono);font-size:13px;color:var(--muted);width:64px;flex:none;white-space:nowrap}
 .bar-row .track{flex:1 1 auto;height:14px;background:var(--grid);border-radius:2px;overflow:hidden}
 .bar-row .fill{height:100%;background:var(--accent)}
 .bar-row .a{font-family:var(--mono);font-size:15px;width:110px;flex:none;text-align:right}

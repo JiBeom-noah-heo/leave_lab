@@ -69,7 +69,7 @@ const schema = [
           <div class="kpi"><small>월 평균</small><b>₩<span id="avg">0</span></b></div>
         </div>
         <div class="card lift">
-          <div class="card-head"><span>MONTHLY</span><span>단위: 원</span></div>
+          <div class="card-head"><span>MONTHLY · 휴직 n개월차</span><span>단위: 원</span></div>
           <div class="bars" id="bars" aria-live="polite"></div>
         </div>
       </section>
@@ -114,7 +114,7 @@ const schema = [
     $('total').textContent = won(r.total);
     $('avg').textContent = won(r.avg);
     $('bars').innerHTML = r.amounts.map((v, i) =>
-      `<div class="bar-row"><span class="l">${i + 1}월</span><div class="track"><div class="fill" style="width:${Math.round(v / r.max * 100)}%"></div></div><span class="a">${won(v)}</span></div>`
+      `<div class="bar-row"><span class="l">${i + 1}개월차</span><div class="track"><div class="fill" style="width:${Math.round(v / r.max * 100)}%"></div></div><span class="a">${won(v)}</span></div>`
     ).join('');
     // 선택한 유형의 계산 방식 표만 보여 주고, 유형 설명을 바꾼다
     document.querySelectorAll<HTMLElement>('.rule-list[data-mode]').forEach(el => { el.hidden = el.dataset.mode !== m; });
