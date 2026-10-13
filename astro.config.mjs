@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { readdirSync, readFileSync } from 'node:fs';
 import rehypeSummary from './src/lib/rehypeSummary.mjs';
+import remarkGfm from 'remark-gfm';
 
 const site = 'https://leave-lab.com';
 
@@ -29,7 +30,9 @@ export default defineConfig({
       },
     }),
   ],
-  markdown: { rehypePlugins: [rehypeSummary] },
+  // GFM은 직접 넣는다. 기본값은 물결표 하나(~)도 취소선으로 바꿔서 "1~3개월"처럼 범위를 적은 글이 깨진다.
+  // singleTilde: false → ~~두 개~~만 취소선.
+  markdown: { gfm: false, remarkPlugins: [[remarkGfm, { singleTilde: false }]], rehypePlugins: [rehypeSummary] },
   i18n: {
     defaultLocale: 'ko',
     locales: ['ko', 'th'],
