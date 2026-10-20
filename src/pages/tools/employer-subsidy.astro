@@ -1,0 +1,203 @@
+---
+// 사업주 육아휴직 지원금 계산기. 계산 규칙과 출처는 src/lib/employerSubsidy.ts와 src/data/rules/employer-subsidy.json에 있다.
+import Base from '../../layouts/Base.astro';
+import { RULE_FILE, AS_OF, EARLIEST, rulesAt, sources, won } from '../../lib/employerSubsidy';
+const r = rulesAt(AS_OF)!;
+const year = RULE_FILE.basisYear ?? AS_OF.slice(0, 4);
+const title = `사업주 육아휴직 지원금 계산기 ${year} — 대체인력·업무분담·특례 비교 | leave-lab`;
+const description = `직원 1명이 육아휴직을 쓸 때 회사가 받는 지원금을 대체인력 채용, 동료 업무분담, 지원금만 세 경우로 나눠 비교합니다. ${year}년 고시 기준 단가, 사후지급 시점, 감원 금지 기간, 신청 마감일까지 함께 보여 줍니다.`;
+const siteUrl = Astro.site?.href ?? 'https://leave-lab.com/';
+const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
+const allSources = RULE_FILE.sources;
+const schema = [
+  {
+    '@context': 'https://schema.org', '@type': 'WebApplication',
+    name: '사업주 육아휴직 지원금 계산기', url: pageUrl, description,
+    applicationCategory: 'FinanceApplication', operatingSystem: 'Web', isAccessibleForFree: true, inLanguage: 'ko',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' }, dateModified: AS_OF,
+    publisher: { '@type': 'Organization', name: 'leave-lab', url: siteUrl },
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: '홈', item: siteUrl },
+      { '@type': 'ListItem', position: 2, name: '계산기', item: new URL('/tools/', siteUrl).href },
+      { '@type': 'ListItem', position: 3, name: '사업주 육아휴직 지원금 계산기', item: pageUrl },
+    ],
+  },
+];
+const ls = r.leaveSubsidy, st = r.substitute, ws = r.workSharing;
+const ruleRows = [
+  { k: '육아휴직', v: `월 ${won(ls.monthly)}원, 최대 ${ls.maxMonths}개월. ${Math.round(ls.deferred.share * 100)}%는 복귀 후 ${ls.deferred.afterMonths}개월 계속 고용하면 지급` },
+  { k: '특례', v: `휴직 시작일에 자녀가 만 ${ls.special.childMaxAgeMonths}개월 이내(임신 중 포함)이고 ${ls.special.minConsecutiveMonths}개월 이상 연속 휴직이면 첫 ${ls.special.months}개월 월 ${won(ls.special.monthly)}원. 대체인력지원금과 함께 받을 수 없음` },
+  { k: '남성 추가', v: `사업장에서 1~${ls.maleIncentive.maxOrdinal}번째 남성 육아휴직이면 월 ${won(ls.maleIncentive.monthly)}원 추가` },
+  { k: '대체인력', v: `${r.smallBelow}인 미만 월 ${won(st.capSmall)}원, 이상 ${won(st.capLarge)}원. 대체인력 임금의 ${Math.round(st.wageRatio * 100)}%까지. 사전 인수인계 최대 ${st.preHandoverMonths}개월, 복직 후 ${st.postHandoverMonths}개월 포함` },
+  { k: '업무분담', v: `${r.smallBelow}인 미만 월 ${won(ws.capSmall)}원, 이상 ${won(ws.capLarge)}원. 실제로 준 분담 수당까지` },
+  { k: '신청 마감', v: `휴직이 끝난 날부터 ${r.applyWithinMonths}개월 안` },
+];
+---
+<Base title={title} description={description} schema={schema}>
+  <main class="container page">
+    <nav class="crumbs" aria-label="현재 위치"><a href="/">홈</a><span>/</span><a href="/tools/">계산기</a><span>/</span><span>사업주 육아휴직 지원금</span></nav>
+
+    <div class="page-head">
+      <span class="eyebrow">TOOL-02 · {year} 기준 · 확인일 {AS_OF}</span>
+      <h1>사업주 육아휴직 지원금 계산기</h1>
+      <p class="lead">직원 1명이 육아휴직을 쓸 때 회사가 받는 지원금을 세 경우로 나눠 비교합니다. 대체인력을 뽑을 때, 동료가 업무를 나눠 맡을 때, 둘 다 없을 때입니다. 언제 얼마를 받는지, 지켜야 할 기간과 마감일도 같이 보여 줍니다.</p>
+    </div>
+
+    <div class="calc-cols">
+      <form class="card calc-form" aria-label="입력" onsubmit="return false">
+        <span class="k">INPUT · 휴직 1건</span>
+        <div class="field">
+          <label for="insured">고용보험 피보험자 수 (명)</label>
+          <input id="insured" type="number" inputmode="numeric" min="1" step="1" value="20" />
+          <span class="hint">{r.smallBelow}인 미만이면 대체인력·업무분담 상한이 더 높습니다.</span>
+        </div>
+        <div class="field two">
+          <div><label for="leave-start">휴직 시작일</label><input id="leave-start" type="date" min={EARLIEST} value="2026-03-01" /></div>
+          <div><label for="leave-end">휴직 종료일</label><input id="leave-end" type="date" min={EARLIEST} value="2027-02-28" /></div>
+        </div>
+        <div class="field">
+          <label for="child">자녀 생년월일</label>
+          <input id="child" type="date" value="2025-10-01" />
+          <label class="check"><input id="pregnant" type="checkbox" /> 임신 중 육아휴직</label>
+          <span class="hint" id="special-hint"></span>
+        </div>
+        <div class="field">
+          <label for="male">남성 육아휴직 순번</label>
+          <select id="male">
+            <option value="">해당 없음</option>
+            <option value="1">사업장 1번째</option>
+            <option value="2">2번째</option>
+            <option value="3">3번째</option>
+          </select>
+        </div>
+
+        <fieldset class="field opt">
+          <legend><label class="check"><input id="use-sub" type="checkbox" checked /> 대체인력을 뽑는다</label></legend>
+          <div class="two">
+            <div><label for="sub-hire">채용일</label><input id="sub-hire" type="date" value="2026-01-01" /></div>
+            <div><label for="sub-end">고용 종료일(예정)</label><input id="sub-end" type="date" value="2027-03-31" /></div>
+          </div>
+          <label for="sub-wage">대체인력 월 임금 (원)</label>
+          <input id="sub-wage" type="number" inputmode="numeric" min="0" step="10000" value="2000000" />
+          <span class="hint">휴직 시작 {st.hireNotBeforeMonths}개월 전부터 새로 고용한 사람만 됩니다. 파견이면 파견 대가를 넣으세요.</span>
+        </fieldset>
+
+        <fieldset class="field opt">
+          <legend><label class="check"><input id="use-share" type="checkbox" checked /> 동료가 업무를 나눠 맡는다</label></legend>
+          <label for="share">업무분담 수당 월 합계 (원)</label>
+          <input id="share" type="number" inputmode="numeric" min="0" step="10000" value="600000" />
+          <span class="hint">분담자 최대 {ws.maxSharers}명에게 주는 수당을 더한 금액입니다.</span>
+        </fieldset>
+
+        <div class="notice">금액은 휴직 시작일에 적용되는 고시 단가로 계산합니다. 실제 지급액은 고용센터 심사로 정해지니 신청 전에 고용24에서 한 번 더 확인하세요.</div>
+      </form>
+
+      <section class="calc-result" aria-label="결과" aria-live="polite">
+        <p class="err" id="err" hidden></p>
+        <div class="scenarios" id="scenarios"></div>
+        <div class="dates" id="dates"></div>
+      </section>
+    </div>
+
+    <section class="rules">
+      <h2>계산 방식</h2>
+      <div class="rule-list">
+        {ruleRows.map(x => <div class="rule"><span class="k">{x.k}</span><span>{x.v}</span></div>)}
+      </div>
+      <p class="note">공식 문서에 없는 부분은 이렇게 계산합니다. 1개월이 안 되는 기간은 남은 일수를 그 달의 총일수로 나눠 일할하고, 원 단위 미만은 버립니다. 특례 대상인지는 휴직 시작일 기준으로 봅니다. 특례를 받으면 같은 휴직의 대체인력지원금은 전체 기간을 못 받는 것으로 봅니다(정부24·고용24 안내 기준).</p>
+      <p class="fine">이 계산기는 금액을 미리 가늠해 보는 참고 도구입니다. 신청은 사업주가 고용24에서 직접 하고, leave-lab은 신청을 대신하거나 개별 사안을 상담하지 않습니다. 입력값은 이 브라우저 안에서만 계산되고 전송·저장되지 않습니다.</p>
+    </section>
+
+    <section class="card calc-sources" aria-label="근거">
+      <div class="card-head"><span>SOURCES</span><span>확인일 {AS_OF}</span></div>
+      <ul>{allSources.map(s => <li><a href={s.url} rel="nofollow noopener" target="_blank">{s.title}</a></li>)}</ul>
+      <div class="card-foot">
+        <b>변경 이력</b>
+        <ul class="changelog">{RULE_FILE.changelog.map(c => <li><span class="d">{c.date}</span> {c.note}</li>)}</ul>
+        규칙 시행일: {RULE_FILE.versions.map(v => v.effectiveFrom).join(' · ')}
+      </div>
+    </section>
+
+    <a class="card related" href="/tools/leave-pay/">
+      <span><span class="k">함께 보기</span><span class="t">육아휴직 급여 계산기 (근로자가 받는 돈)</span></span>
+      <span class="go">열기 →</span>
+    </a>
+  </main>
+</Base>
+
+<script>
+  import { compareScenarios, sources, won, type LeaveInput, type Scenario } from '../../lib/employerSubsidy';
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const val = (id: string) => $<HTMLInputElement>(id).value;
+  const num = (id: string) => Number(val(id)) || 0;
+  const on = (id: string) => $<HTMLInputElement>(id).checked;
+  const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+  const m = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(2));
+
+  function input(): LeaveInput {
+    return {
+      insured: num('insured'),
+      leaveStart: val('leave-start'),
+      leaveEnd: val('leave-end'),
+      childBirthDate: on('pregnant') ? null : val('child'),
+      maleOrdinal: val('male') ? Number(val('male')) : null,
+      substitute: on('use-sub') ? { hireDate: val('sub-hire'), endDate: val('sub-end'), monthlyWage: num('sub-wage') } : null,
+      sharingMonthlyAllowance: on('use-share') ? num('share') : null,
+    };
+  }
+
+  function card(s: Scenario, best: boolean): string {
+    if (s.ineligible) {
+      return `<article class="card scen off"><div class="card-head"><span>${esc(s.label)}</span><span>해당 없음</span></div><p class="why">${esc(s.ineligible)}</p></article>`;
+    }
+    const rows = s.lines.map(l =>
+      `<tr><td>${esc(l.label)}<small>${l.from} ~ ${l.to}</small></td><td class="n">${won(l.monthly)} × ${m(l.months)}</td><td class="n">${won(l.amount)}</td></tr>`).join('');
+    const extras = s.extras.map(x => `<li class="extra"><b>${esc(x.label)} ${won(x.amount)}원 (총액 제외)</b> ${esc(x.note)}</li>`).join('');
+    const notes = s.notes.map(n => `<li>${esc(n)}</li>`).join('');
+    return `<article class="card scen${best ? ' lift' : ''}">
+      <div class="card-head"><span>${esc(s.label)}</span><span>${best ? '가장 큼' : ''}</span></div>
+      <div class="scen-kpis">
+        <div><small>총 지원금</small><b>₩${won(s.total)}</b></div>
+        <div><small>휴직 중 신청</small><b>₩${won(s.upfront)}</b></div>
+        <div><small>복귀 6개월 뒤 (${s.deferredFrom}~)</small><b>₩${won(s.deferred)}</b></div>
+      </div>
+      <table class="lines"><thead><tr><th>항목</th><th class="n">월 금액 × 개월</th><th class="n">금액(원)</th></tr></thead><tbody>${rows}</tbody></table>
+      <ul class="scen-notes">${notes}${extras}</ul>
+    </article>`;
+  }
+
+  function update() {
+    const err = $('err');
+    try {
+      const c = compareScenarios(input());
+      err.hidden = true;
+      $('special-hint').textContent = `특례: ${c.specialEligible ? '대상' : '대상 아님'} (${c.specialReason})`;
+      const best = Math.max(...c.scenarios.map(s => s.total));
+      $('scenarios').innerHTML = c.scenarios.map(s => card(s, s.total === best && best > 0)).join('');
+      const ids = c.notices.flatMap(n => n.sources);
+      $('dates').innerHTML = `<div class="card dates-card"><div class="card-head"><span>DATES · 놓치면 안 되는 날</span></div>
+        <div class="rule"><span class="k">신청 마감</span><span>${c.applyBy}까지 (휴직 종료일 + 12개월)</span></div>
+        <div class="rule"><span class="k">적용 규칙</span><span>${c.rulesDate} 시행 기준</span></div>
+        <ul class="scen-notes">${c.notices.map(n => `<li>${esc(n.text)}</li>`).join('')}</ul>
+        <p class="src">근거: ${sources(ids).map(s => `<a href="${s.url}" rel="nofollow noopener" target="_blank">${esc(s.title)}</a>`).join(' · ')}</p></div>`;
+    } catch (e) {
+      err.hidden = false;
+      err.textContent = (e as Error).message;
+      $('scenarios').innerHTML = '';
+      $('dates').innerHTML = '';
+    }
+    $<HTMLInputElement>('child').disabled = on('pregnant');
+    document.querySelectorAll<HTMLFieldSetElement>('fieldset.opt').forEach(fs => {
+      const box = fs.querySelector<HTMLInputElement>('legend input')!;
+      fs.querySelectorAll<HTMLInputElement>('.two input, :scope > input').forEach(i => { i.disabled = !box.checked; });
+    });
+  }
+  document.querySelectorAll('.calc-form input, .calc-form select').forEach(el => {
+    el.addEventListener('input', update);
+    el.addEventListener('change', update);
+  });
+  update();
+</script>
