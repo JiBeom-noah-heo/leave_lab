@@ -26,13 +26,14 @@ const schema = [
     ],
   },
 ];
-const ls = r.leaveSubsidy, st = r.substitute, ws = r.workSharing;
+const ls = r.leaveSubsidy, st = r.substitute, ws = r.workSharing, rh = r.reducedHours;
 const ruleRows = [
   { k: '육아휴직', v: `월 ${won(ls.monthly)}원, 최대 ${ls.maxMonths}개월. ${Math.round(ls.deferred.share * 100)}%는 복귀 후 ${ls.deferred.afterMonths}개월 계속 고용하면 지급` },
   { k: '특례', v: `휴직 시작일에 자녀가 만 ${ls.special.childMaxAgeMonths}개월 이내(임신 중 포함)이고 ${ls.special.minConsecutiveMonths}개월 이상 연속 휴직이면 첫 ${ls.special.months}개월 월 ${won(ls.special.monthly)}원. 대체인력지원금과 함께 받을 수 없음` },
   { k: '남성 추가', v: `사업장에서 1~${ls.maleIncentive.maxOrdinal}번째 남성 육아휴직이면 월 ${won(ls.maleIncentive.monthly)}원 추가` },
   { k: '대체인력', v: `${r.smallBelow}인 미만 월 ${won(st.capSmall)}원, 이상 ${won(st.capLarge)}원. 대체인력 임금의 ${Math.round(st.wageRatio * 100)}%까지. 사전 인수인계 최대 ${st.preHandoverMonths}개월, 복직 후 ${st.postHandoverMonths}개월 포함` },
   { k: '업무분담', v: `${r.smallBelow}인 미만 월 ${won(ws.capSmall)}원, 이상 ${won(ws.capLarge)}원. 실제로 준 분담 수당까지` },
+  { k: '근로시간 단축', v: `월 ${won(rh.monthly)}원(최대 ${rh.maxMonths}개월), 단축을 처음 허용한 사업장의 1~${rh.incentive.maxOrdinal}번째 사례면 월 ${won(rh.incentive.monthly)}원 추가. 업무분담은 규모와 상관없이 월 ${won(rh.sharingCap)}원(주당 ${rh.sharingMinReductionHours}시간 이상 단축). 대체인력은 근무시간 비례(월 최대 ${won(rh.substituteCap)}원)라 금액을 내지 않음` },
   { k: '신청 마감', v: `휴직이 끝난 날부터 ${r.applyWithinMonths}개월 안` },
 ];
 ---
@@ -48,23 +49,45 @@ const ruleRows = [
 
     <div class="calc-cols">
       <form class="card calc-form" aria-label="입력" onsubmit="return false">
-        <span class="k">INPUT · 휴직 1건</span>
+        <span class="k">INPUT · 근로자 1명</span>
+        <div class="field">
+          <span id="kind-label" style="font-size:15px;font-weight:500">제도</span>
+          <div class="modes" role="radiogroup" aria-labelledby="kind-label">
+            <label class="on"><input type="radio" name="kind" value="leave" checked /><span>육아휴직</span></label>
+            <label><input type="radio" name="kind" value="reduced" /><span>육아기 근로시간 단축</span></label>
+          </div>
+        </div>
         <div class="field">
           <label for="insured">고용보험 피보험자 수 (명)</label>
           <input id="insured" type="number" inputmode="numeric" min="1" step="1" value="20" />
           <span class="hint">{r.smallBelow}인 미만이면 대체인력·업무분담 상한이 더 높습니다.</span>
         </div>
         <div class="field two">
-          <div><label for="leave-start">휴직 시작일</label><input id="leave-start" type="date" min={EARLIEST} value="2026-03-01" /></div>
-          <div><label for="leave-end">휴직 종료일</label><input id="leave-end" type="date" min={EARLIEST} value="2027-02-28" /></div>
+          <div><label for="leave-start">시작일</label><input id="leave-start" type="date" min={EARLIEST} value="2026-03-01" /></div>
+          <div><label for="leave-end">종료일</label><input id="leave-end" type="date" min={EARLIEST} value="2027-02-28" /></div>
         </div>
-        <div class="field">
+        <div class="field" data-kind="leave">
           <label for="child">자녀 생년월일</label>
           <input id="child" type="date" value="2025-10-01" />
           <label class="check"><input id="pregnant" type="checkbox" /> 임신 중 육아휴직</label>
           <span class="hint" id="special-hint"></span>
         </div>
-        <div class="field">
+        <div class="field" data-kind="reduced" hidden>
+          <label for="hours">주당 줄어든 근로시간</label>
+          <input id="hours" type="number" inputmode="numeric" min="0" max="35" step="1" value="10" />
+          <span class="hint">업무분담지원금은 주당 {rh.sharingMinReductionHours}시간 이상 줄였을 때만 받습니다.</span>
+        </div>
+        <div class="field" data-kind="reduced" hidden>
+          <label for="rord">단축 첫 허용 사업장 순번</label>
+          <select id="rord">
+            <option value="">해당 없음</option>
+            <option value="1">처음 허용한 1번째</option>
+            <option value="2">2번째</option>
+            <option value="3">3번째</option>
+          </select>
+          <span class="hint">육아기 근로시간 단축을 한 번도 허용한 적 없는 사업장이 처음 허용한 경우입니다.</span>
+        </div>
+        <div class="field" data-kind="leave">
           <label for="male">남성 육아휴직 순번</label>
           <select id="male">
             <option value="">해당 없음</option>
@@ -137,8 +160,12 @@ const ruleRows = [
   const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
   const m = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(2));
 
+  const kind = () => (document.querySelector<HTMLInputElement>('input[name="kind"]:checked')?.value ?? 'leave') as 'leave' | 'reduced';
   function input(): LeaveInput {
     return {
+      kind: kind(),
+      reductionHoursPerWeek: num('hours'),
+      reducedOrdinal: val('rord') ? Number(val('rord')) : null,
       insured: num('insured'),
       leaveStart: val('leave-start'),
       leaveEnd: val('leave-end'),
@@ -162,7 +189,7 @@ const ruleRows = [
       <div class="scen-kpis">
         <div><small>총 지원금</small><b>₩${won(s.total)}</b></div>
         <div><small>휴직 중 신청</small><b>₩${won(s.upfront)}</b></div>
-        <div><small>복귀 6개월 뒤 (${s.deferredFrom}~)</small><b>₩${won(s.deferred)}</b></div>
+        <div><small>종료 6개월 뒤 (${s.deferredFrom}~)</small><b>₩${won(s.deferred)}</b></div>
       </div>
       <table class="lines"><thead><tr><th>항목</th><th class="n">월 금액 × 개월</th><th class="n">금액(원)</th></tr></thead><tbody>${rows}</tbody></table>
       <ul class="scen-notes">${notes}${extras}</ul>
@@ -190,6 +217,9 @@ const ruleRows = [
       $('dates').innerHTML = '';
     }
     $<HTMLInputElement>('child').disabled = on('pregnant');
+    const k = kind();
+    document.querySelectorAll<HTMLElement>('[data-kind]').forEach(el => { el.hidden = el.dataset.kind !== k; });
+    document.querySelectorAll<HTMLInputElement>('input[name="kind"]').forEach(el => el.closest('label')?.classList.toggle('on', el.checked));
     document.querySelectorAll<HTMLFieldSetElement>('fieldset.opt').forEach(fs => {
       const box = fs.querySelector<HTMLInputElement>('legend input')!;
       fs.querySelectorAll<HTMLInputElement>('.two input, :scope > input').forEach(i => { i.disabled = !box.checked; });

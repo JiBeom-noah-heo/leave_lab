@@ -168,3 +168,36 @@ test('규칙 파일: 모든 출처 id가 sources에 있고 checked 날짜가 있
   };
   walk(RULE_FILE.versions);
 });
+
+// 육아기 근로시간 단축 (고시 별표 5 제2·3·4호, 시행령 제29조 제1항 제4호 가목 단서)
+const reduced = (extra: Partial<LeaveInput> = {}): LeaveInput => ({
+  kind: 'reduced', insured: 20, leaveStart: '2026-03-01', leaveEnd: '2027-02-28', childBirthDate: '2025-10-01',
+  reductionHoursPerWeek: 10, sharingMonthlyAllowance: 300_000, ...extra,
+});
+
+test('단축 12개월: 지원금 월 30만 × 12 = 360만 원, 특례 없음, 사후 180만 원', () => {
+  const c = compareScenarios(reduced());
+  assert.equal(c.specialEligible, false);
+  const none = c.scenarios.find(s => s.id === 'none')!;
+  assert.equal(none.total, 3_600_000);
+  assert.equal(none.deferred, 1_800_000);
+  assert.ok(none.notes.some(n => n.includes('단축이 끝난 뒤')));
+});
+
+test('단축 업무분담: 규모와 상관없이 월 20만 원 상한, 주당 10시간 미만 단축이면 제외', () => {
+  assert.equal(sum(get(reduced(), 'sharing'), 'sharing'), 200_000 * 12);
+  assert.equal(sum(get(reduced({ insured: 100 }), 'sharing'), 'sharing'), 200_000 * 12);
+  assert.match(get(reduced({ reductionHoursPerWeek: 8 }), 'sharing').ineligible ?? '', /주당 10시간/);
+});
+
+test('단축 첫 허용 사업장 인센티브 월 10만 원, 단축 대체인력은 금액을 내지 않는다', () => {
+  assert.equal(sum(get(reduced({ reducedOrdinal: 1 }), 'none'), 'incentive'), 1_200_000);
+  assert.equal(sum(get(reduced({ maleOrdinal: 1 }), 'none'), 'incentive'), 0);
+  const sub = get(reduced({ substitute: { hireDate: '2026-02-01', endDate: '2027-02-28', monthlyWage: 2_000_000 } }), 'substitute');
+  assert.match(sub.ineligible ?? '', /1,200,000원/);
+});
+
+test('단축은 최대 36개월까지 계산', () => {
+  const none = get(reduced({ leaveStart: '2026-01-01', leaveEnd: '2029-12-31' }), 'none');
+  assert.equal(sum(none, 'leave'), 300_000 * 36);
+});

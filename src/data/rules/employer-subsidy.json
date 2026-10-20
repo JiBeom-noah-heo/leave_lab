@@ -119,6 +119,16 @@
           "maxSharers": 5,
           "sources": ["notice-2026-52", "decree-29", "center-sharing"]
         },
+        "reducedHours": {
+          "label": "육아기 근로시간 단축 지원금",
+          "monthly": 300000,
+          "maxMonths": 36,
+          "incentive": { "label": "단축 첫 허용 사업장 인센티브", "monthly": 100000, "maxOrdinal": 3 },
+          "substituteCap": 1200000,
+          "sharingCap": 200000,
+          "sharingMinReductionHours": 10,
+          "sources": ["notice-2026-52", "decree-29"]
+        },
         "spouseLeaveSharing": null,
         "cultureFund": {
           "label": "대체인력 문화확산 지원금 (신한금융 재원)",
@@ -187,6 +197,7 @@
     }
   ],
   "changelog": [
-    { "date": "2026-10-12", "note": "처음 작성. 고시 제2026-52호 별표 5, 시행령 제29조(2026-09-18), 공고 제2026-55호, 정부24와 대조." }
+    { "date": "2026-10-12", "note": "처음 작성. 고시 제2026-52호 별표 5, 시행령 제29조(2026-09-18), 공고 제2026-55호, 정부24와 대조." },
+    { "date": "2026-10-21", "note": "육아기 근로시간 단축 추가(지원금 월 30만 원, 첫 허용 사업장 인센티브 월 10만 원, 업무분담 월 20만 원). 고시 별표 5 제2·3·4호, 시행령 제29조와 대조." }
   ]
 }

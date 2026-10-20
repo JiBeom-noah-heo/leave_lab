@@ -1,4 +1,5 @@
-// 사업주용 출산육아기 고용안정장려금 계산 엔진. 육아휴직 1건에 대해 대체인력 / 업무분담 / 지원금만 시나리오를 비교한다.
+// 사업주용 출산육아기 고용안정장려금 계산 엔진. 육아휴직(또는 육아기 근로시간 단축) 1건에 대해
+// 대체인력 / 업무분담 / 지원금만 시나리오를 비교한다.
 //
 // 금액·요건과 근거는 src/data/rules/employer-subsidy.json에 있다(규칙 파일 형식은 src/lib/rules.ts).
 // 날짜는 모두 'YYYY-MM-DD' 문자열이고, 끝 날짜는 그날을 포함한다.
@@ -9,6 +10,9 @@
 //  - 특례 자격: 휴직 시작일에 자녀가 만 12개월 이내(또는 임신 중)이고, 휴직이 3개월 이상 연속일 때.
 //  - 특례와 대체인력: 특례를 받으면 같은 휴직의 대체인력지원금 전체를 막는다(정부24·고용24 안내 기준).
 //  - 남성 인센티브: 육아휴직 지원금이 나오는 모든 달(최대 18개월)에 붙인다.
+//  - 육아기 근로시간 단축의 대체인력지원금은 '대체인력으로 근무한 시간에 비례'해 산정한다(고시 별표 5 제3호).
+//    비례의 기준 시간이 고시에 없어 금액을 내지 않고 상한(월 120만 원)만 알린다.
+//  - 단축 기간 한도는 1년에 쓰지 않은 육아휴직 기간의 2배를 더한 기간(최대 3년)이다. 남은 육아휴직 기간은 묻지 않고 3년까지 계산한다.
 //  - 2026-01-01 이전 기간(예: 1·2월 휴직의 사전 인수인계)은 그 전 규칙을 넣지 않아 계산에서 빼고 알린다.
 import data from '../data/rules/employer-subsidy.json' with { type: 'json' };
 import { valuesAt, sourceById, type RuleFile, type Source } from './rules.ts';
@@ -45,6 +49,17 @@ export interface EmployerValues {
     excludedWithSpecial: boolean;
   };
   workSharing: Sourced & { label: string; capSmall: number; capLarge: number; maxSharers: number };
+  reducedHours: Sourced & {
+    label: string;
+    monthly: number;
+    maxMonths: number;
+    /** 단축을 처음 허용한 사업장의 1~3번째 사례 */
+    incentive: { label: string; monthly: number; maxOrdinal: number };
+    substituteCap: number;
+    sharingCap: number;
+    /** 업무분담지원금을 받으려면 단축된 시간이 주당 이 값 이상이어야 한다 */
+    sharingMinReductionHours: number;
+  };
   spouseLeaveSharing: (Sourced & { label: string; capSmall: number; capLarge: number; minConsecutiveDays: number }) | null;
   cultureFund: Sourced & { label: string; amount: number; maxInsured: number };
   notices: Record<string, Notice>;
@@ -118,6 +133,8 @@ export interface SubstituteInput {
 }
 
 export interface LeaveInput {
+  /** 육아휴직(기본) 또는 육아기 근로시간 단축 */
+  kind?: 'leave' | 'reduced';
   /** 고용보험 피보험자 수 */
   insured: number;
   leaveStart: string;
@@ -126,6 +143,10 @@ export interface LeaveInput {
   childBirthDate: string | null;
   /** 남성 육아휴직이고 사업장 1~3번째 허용 사례면 그 순번. 아니면 null */
   maleOrdinal?: number | null;
+  /** 단축: 육아기 근로시간 단축을 처음 허용한 사업장의 1~3번째 사례면 그 순번 */
+  reducedOrdinal?: number | null;
+  /** 단축: 주당 줄어든 근로시간 */
+  reductionHoursPerWeek?: number | null;
   substitute?: SubstituteInput | null;
   /** 업무분담자 전체에게 주는 월 분담 수당 합계 */
   sharingMonthlyAllowance?: number | null;
@@ -215,7 +236,10 @@ function linesFrom(segs: { seg: Segment; monthly: number }[], label: string, kin
   return out.filter(l => l.amount > 0);
 }
 
+const isReduced = (input: LeaveInput) => input.kind === 'reduced';
+
 export function specialEligibility(input: LeaveInput, r: EmployerValues): { ok: boolean; reason: string } {
+  if (isReduced(input)) return { ok: false, reason: '특례는 육아휴직에만 있습니다' };
   const sp = r.leaveSubsidy.special;
   const fullMonths = monthSegments(input.leaveStart, input.leaveEnd).filter(s => s.fraction === 1).length;
   if (fullMonths < sp.minConsecutiveMonths) return { ok: false, reason: `휴직이 ${sp.minConsecutiveMonths}개월 이상 연속이어야 특례가 됩니다` };
@@ -226,6 +250,16 @@ export function specialEligibility(input: LeaveInput, r: EmployerValues): { ok: 
 }
 
 function leaveSubsidyLines(input: LeaveInput, r: EmployerValues, useSpecial: boolean): Line[] {
+  if (isReduced(input)) {
+    const rh = r.reducedHours;
+    const segs = monthSegments(input.leaveStart, input.leaveEnd).slice(0, rh.maxMonths);
+    const lines = linesFrom(segs.map(seg => ({ seg, monthly: rh.monthly })), rh.label, 'leave', rh.sources);
+    const ord = input.reducedOrdinal;
+    if (ord != null && ord >= 1 && ord <= rh.incentive.maxOrdinal) {
+      lines.push(...linesFrom(segs.map(seg => ({ seg, monthly: rh.incentive.monthly })), rh.incentive.label, 'incentive', rh.sources));
+    }
+    return lines;
+  }
   const ls = r.leaveSubsidy;
   const segs = monthSegments(input.leaveStart, input.leaveEnd).slice(0, ls.maxMonths);
   const lines: Line[] = [];
@@ -271,10 +305,15 @@ function substituteLines(input: LeaveInput, sub: SubstituteInput, notes: string[
   return lines;
 }
 
+function sharingCap(r: EmployerValues, input: LeaveInput): number {
+  if (isReduced(input)) return r.reducedHours.sharingCap;
+  return isSmall(r, input.insured) ? r.workSharing.capSmall : r.workSharing.capLarge;
+}
+
 function sharingLines(input: LeaveInput, allowance: number): Line[] {
   const segs = monthSegments(input.leaveStart, input.leaveEnd).map(seg => {
     const r = rulesAt(seg.from)!;
-    const cap = isSmall(r, input.insured) ? r.workSharing.capSmall : r.workSharing.capLarge;
+    const cap = sharingCap(r, input);
     return { seg, monthly: Math.min(cap, allowance) };
   });
   const ws = rulesAt(input.leaveStart)!.workSharing;
@@ -293,6 +332,9 @@ function buildScenario(id: ScenarioId, input: LeaveInput, r: EmployerValues, spe
   if (id === 'substitute') {
     const sub = input.substitute;
     if (!sub) return empty('대체인력 정보를 입력하지 않았습니다');
+    if (isReduced(input)) {
+      return empty(`육아기 근로시간 단축의 대체인력지원금(월 최대 ${r.reducedHours.substituteCap.toLocaleString('ko-KR')}원)은 대체인력이 근무한 시간에 비례해 산정합니다. 비례 기준이 고시에 자세히 나와 있지 않아 이 계산기는 금액을 내지 않습니다. 고용센터(1350)에 확인하세요.`);
+    }
     const st = r.substitute;
     if (sub.hireDate < addMonths(input.leaveStart, -st.hireNotBeforeMonths)) {
       return empty(`대체인력은 휴직 시작 ${st.hireNotBeforeMonths}개월 전(${addMonths(input.leaveStart, -st.hireNotBeforeMonths)}) 이후에 새로 고용해야 합니다`);
@@ -316,8 +358,13 @@ function buildScenario(id: ScenarioId, input: LeaveInput, r: EmployerValues, spe
   } else if (id === 'sharing') {
     const a = input.sharingMonthlyAllowance;
     if (!(a != null && a > 0)) return empty('업무분담 수당을 입력하지 않았습니다');
+    if (isReduced(input)) {
+      const min = r.reducedHours.sharingMinReductionHours;
+      const h = input.reductionHoursPerWeek ?? 0;
+      if (h < min) return empty(`단축된 근로시간이 주당 ${min}시간 이상이어야 업무분담지원금을 받습니다(입력 ${h}시간)`);
+    }
     extra = sharingLines(input, a);
-    const cap = isSmall(r, input.insured) ? r.workSharing.capSmall : r.workSharing.capLarge;
+    const cap = sharingCap(r, input);
     if (a > cap) notes.push(`분담 수당이 월 상한 ${cap.toLocaleString('ko-KR')}원을 넘는 부분은 지원되지 않습니다(사업주 부담).`);
   }
 
@@ -325,7 +372,7 @@ function buildScenario(id: ScenarioId, input: LeaveInput, r: EmployerValues, spe
   const leaveTotal = leave.reduce((s, l) => s + l.amount, 0);
   const extraTotal = extra.reduce((s, l) => s + l.amount, 0);
   const deferred = Math.floor(leaveTotal * r.leaveSubsidy.deferred.share);
-  notes.push(`육아휴직 지원금의 ${Math.round(r.leaveSubsidy.deferred.share * 100)}%(${deferred.toLocaleString('ko-KR')}원)는 복귀 후 ${r.leaveSubsidy.deferred.afterMonths}개월 계속 고용해야 받습니다(${deferredFrom}부터 신청). 근로자가 자기 사정으로 그만둔 경우에도 받습니다.`);
+  notes.push(`${isReduced(input) ? r.reducedHours.label : r.leaveSubsidy.label}의 ${Math.round(r.leaveSubsidy.deferred.share * 100)}%(${deferred.toLocaleString('ko-KR')}원)는 ${isReduced(input) ? '단축이 끝난 뒤' : '복귀 후'} ${r.leaveSubsidy.deferred.afterMonths}개월 계속 고용해야 받습니다(${deferredFrom}부터 신청). 근로자가 자기 사정으로 그만둔 경우에도 받습니다.`);
 
   return {
     id, label: SCENARIO_LABEL[id], ineligible: null,
@@ -341,7 +388,7 @@ export function compareScenarios(input: LeaveInput): Comparison {
   validate(input);
   const r = rulesAt(input.leaveStart)!;
   const days = daysInclusive(input.leaveStart, input.leaveEnd);
-  if (days < r.minLeaveDays) throw new Error(`육아휴직을 ${r.minLeaveDays}일 이상 허용해야 지원 대상입니다(입력 ${days}일)`);
+  if (days < r.minLeaveDays) throw new Error(`${isReduced(input) ? '육아기 근로시간 단축' : '육아휴직'}을 ${r.minLeaveDays}일 이상 허용해야 지원 대상입니다(입력 ${days}일)`);
   const special = specialEligibility(input, r);
   const ids: ScenarioId[] = [];
   if (input.substitute) ids.push('substitute');
