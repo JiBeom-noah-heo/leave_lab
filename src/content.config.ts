@@ -16,6 +16,9 @@ const log = defineCollection({
     tags: z.array(z.string()).default([]),
     sources: z.array(z.object({ title: z.string(), url: z.string().url() })).default([]),
     draft: z.boolean().default(false),
+    // 발행 규칙 (src/postRules.ts). 없으면 본문으로 판단: 제휴 링크가 있으면 공정위 문구, 얇은 글은 검색 제외
+    affiliate: z.boolean().optional(),
+    noindex: z.boolean().optional(),
     // 실험 카드 (design/Post.dc.html). 모두 선택 사항이라 기존 글은 그대로 빌드된다.
     expId: z.string().optional(),            // 예: EXP-02
     category: z.enum(CATEGORIES).optional(), // 홈 탭 필터 기준

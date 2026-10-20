@@ -7,6 +7,7 @@ import Subscribe from '../components/Subscribe.astro';
 import { SITE } from '../site';
 import { ymd, readingMinutes, statusOf, categoryOf, relatedTools } from '../ui';
 import { seriesOf, episodesOf } from '../series';
+import { postFlags, AFFILIATE_NOTICE } from '../postRules';
 
 export interface Brief { slug: string; title: string; label: string }
 interface Props { p: CollectionEntry<'log'>; prev: Brief | null; next: Brief | null; lang?: 'ko' | 'th' }
@@ -33,6 +34,7 @@ const related = (await getCollection('log', q => q.data.lang === lang && !q.data
   .sort((a, b) => b.score - a.score || b.q.data.date.valueOf() - a.q.data.date.valueOf())
   .slice(0, 3);
 const tools = relatedTools(d);
+const flags = postFlags(d, p.body ?? '');
 
 // 연재: 같은 project의 글을 1편부터 순서대로. 연재 안에서는 이전·다음 글도 연재 순서를 따른다.
 const ser = seriesOf(d);
@@ -72,7 +74,7 @@ const schema = [
   },
 ];
 ---
-<Base title={d.title} description={d.description} lang={lang} type="article" published={d.date} schema={schema}>
+<Base title={d.title} description={d.description} lang={lang} type="article" published={d.date} schema={schema} noindex={flags.noindex}>
   <main class="container post-main">
     <nav class="crumbs" aria-label="현재 위치">
       <a href={th ? '/th/' : '/'}>{t.home}</a><span>/</span><a href={th ? '/th/' : '/log/'}>{t.logs}</a><span>/</span><span>{label}</span>
@@ -89,6 +91,8 @@ const schema = [
         {SITE.author && <span>{SITE.author}</span>}<span>{ymd(d.date)}</span><span>{t.read(readingMinutes(p.body ?? ''))}</span>
       </div>
     </div>
+
+    {flags.affiliate && <p class="affiliate-notice" role="note">{AFFILIATE_NOTICE[lang]}</p>}
 
     {inSeries && !th && (
       <nav class="series-bar" aria-label="연재">
