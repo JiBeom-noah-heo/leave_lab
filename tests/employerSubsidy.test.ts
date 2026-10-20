@@ -201,3 +201,9 @@ test('단축은 최대 36개월까지 계산', () => {
   const none = get(reduced({ leaveStart: '2026-01-01', leaveEnd: '2029-12-31' }), 'none');
   assert.equal(sum(none, 'leave'), 300_000 * 36);
 });
+
+test('부정수급 안내는 항상 보이고 고용보험법 제35조를 근거로 단다', () => {
+  const n = compareScenarios(reduced()).notices.find(x => x.text.includes('5배'));
+  assert.ok(n);
+  assert.deepEqual(n.sources, ['act-35']);
+});
