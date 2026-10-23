@@ -181,7 +181,7 @@ const ruleRows = [
       return `<article class="card scen off"><div class="card-head"><span>${esc(s.label)}</span><span>해당 없음</span></div><p class="why">${esc(s.ineligible)}</p></article>`;
     }
     const rows = s.lines.map(l =>
-      `<tr><td>${esc(l.label)}<small>${l.from} ~ ${l.to}</small></td><td class="n">${won(l.monthly)} × ${m(l.months)}</td><td class="n">${won(l.amount)}</td></tr>`).join('');
+      `<tr><td>${esc(l.label)}<small><span class="nw">${l.from} ~</span> <span class="nw">${l.to}</span></small><small class="calc-m">${won(l.monthly)} × ${m(l.months)}</small></td><td class="n calc">${won(l.monthly)} × ${m(l.months)}</td><td class="n">${won(l.amount)}</td></tr>`).join('');
     const extras = s.extras.map(x => `<li class="extra"><b>${esc(x.label)} ${won(x.amount)}원 (총액 제외)</b> ${esc(x.note)}</li>`).join('');
     const notes = s.notes.map(n => `<li>${esc(n)}</li>`).join('');
     return `<article class="card scen${best ? ' lift' : ''}">
@@ -189,9 +189,9 @@ const ruleRows = [
       <div class="scen-kpis">
         <div><small>총 지원금</small><b>₩${won(s.total)}</b></div>
         <div><small>휴직 중 신청</small><b>₩${won(s.upfront)}</b></div>
-        <div><small>종료 6개월 뒤 (${s.deferredFrom}~)</small><b>₩${won(s.deferred)}</b></div>
+        <div><small>종료 6개월 뒤 <span class="nw">(${s.deferredFrom}~)</span></small><b>₩${won(s.deferred)}</b></div>
       </div>
-      <table class="lines"><thead><tr><th>항목</th><th class="n">월 금액 × 개월</th><th class="n">금액(원)</th></tr></thead><tbody>${rows}</tbody></table>
+      <table class="lines"><thead><tr><th>항목</th><th class="n calc">월 금액 × 개월</th><th class="n">금액(원)</th></tr></thead><tbody>${rows}</tbody></table>
       <ul class="scen-notes">${notes}${extras}</ul>
     </article>`;
   }
